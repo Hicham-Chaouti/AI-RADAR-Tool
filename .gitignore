@@ -36,3 +36,4 @@ backend/data/raw/
 
 # ─── Docker ─────────────────────────────────────────────────
 docker-compose.override.yml
+Prompt.md
