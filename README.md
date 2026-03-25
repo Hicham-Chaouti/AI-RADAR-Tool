@@ -98,14 +98,44 @@ docker-compose up
 |---|---|---|
 | F0 | Scraping Pipeline | Builds KB from real public sources |
 | F1 | Client Onboarding | Sector, capabilities, strategic objectives |
-| F2 | Use Case Catalogue | 60–200 scraped use cases in PostgreSQL + Qdrant |
+| F2 | Use Case Catalogue | 1,068 anonymized use cases in PostgreSQL + Qdrant |
 | F3 | Sector Filters & Search | Qdrant vector similarity + metadata filters |
 | F4 | Interactive Radar Chart | 5-axis ECharts radar with DXC branding |
 | F5 | Scoring Engine | 4-criteria weighted formula (query-time) |
-| F6 | Use Case Detail Cards | Company example, challenge, solution, source URL |
+| F6 | Use Case Detail Cards | Challenge, solution, benefits, source URL |
 | F7 | Top 10 Prioritized | Ranked by Radar Score + LLM justification |
 | F8 | PDF Export | DXC branded report with source citations |
 | F9 | Semantic Search | Natural language → Qdrant ranked results |
+| F10 | Feedback System | Decision & outcome feedback with KPI tracking |
+| F11 | Data Anonymization | Commercial name removal + generic descriptions |
+
+## 🎉 Latest Release (v1.0.0)
+
+### ✨ New Features
+- **Decision Feedback System**: Track strategic decisions and confidence scores
+- **Outcome Tracking**: Record implementation results and KPI metrics
+- **Fully Anonymized Catalog**: 1,068 use cases without commercial brand names
+- **Enhanced Radar Axes**: Aligned with 4-factor scoring engine
+
+### 🔧 Improvements
+- Upgraded ESLint to v9 with modern rules
+- Improved UI with gradient effects and optimized spacing
+- Better search parity between regular and session-aware endpoints
+- Comprehensive data anonymization pipeline
+
+### 🐛 Bug Fixes
+- Fixed npm security vulnerabilities (3 resolved)
+- Corrected sector normalization in search
+- Enhanced error handling in API endpoints
+- Fixed visibility of updated use cases
+
+### 📦 Data Changes
+- Removed all company-specific references (Wells Fargo, Salesforce, Google Cloud, etc.)
+- Anonymized 457 descriptions with generic use case intent
+- Removed company_example field references
+- Updated AI solution descriptions to be platform-agnostic
+
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for professional deployment steps.**
 
 ## 📁 Project Structure
 

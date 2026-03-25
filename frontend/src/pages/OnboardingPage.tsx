@@ -4,6 +4,7 @@ import { INDUSTRIES, CAPABILITIES } from '../utils/constants'
 import { useSessionStore } from '../store/sessionStore'
 import { createSession } from '../api/sessions'
 import { scoreSession } from '../api/scoring'
+import type { UseCaseScored } from '../types/useCase'
 
 export default function OnboardingPage() {
     const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function OnboardingPage() {
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
-        if (!isLoading) { setProgress(0); return }
+        if (!isLoading) return
         const interval = setInterval(() => {
             setProgress((p) => Math.min(p + 0.4, 90))
         }, 100)
@@ -31,6 +32,7 @@ export default function OnboardingPage() {
 
     const handleSubmit = async () => {
         if (!sector || !clientName) return
+        setProgress(0)
         setLoading(true, 'Creating session...')
         setError(null)
         try {
@@ -48,12 +50,19 @@ export default function OnboardingPage() {
             setSession(session)
             setLoading(true, 'Analyzing use cases...')
             const result = await scoreSession(session.id)
-            setTopTen(result.top_10 as any)
+            setTopTen(result.top_10 as UseCaseScored[])
             setProgress(100)
             setLoading(false)
             navigate('/radar')
-        } catch (e: any) {
-            setError(e?.response?.data?.detail || 'An error occurred')
+        } catch (e: unknown) {
+            const detail =
+                typeof e === 'object' &&
+                e !== null &&
+                'response' in e &&
+                typeof (e as { response?: { data?: { detail?: unknown } } }).response?.data?.detail === 'string'
+                    ? (e as { response?: { data?: { detail?: string } } }).response?.data?.detail
+                    : undefined
+            setError(detail || 'An error occurred')
         }
     }
 
