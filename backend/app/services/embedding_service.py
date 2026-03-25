@@ -30,10 +30,16 @@ def init_embedding_model() -> None:
     log.info(f"Embedding model loaded (dim={dim})")
 
 
+def is_model_ready() -> bool:
+    """Check if the embedding model has finished loading."""
+    return _model is not None
+
+
 def get_model():
     """Return the loaded SentenceTransformer model."""
     if _model is None:
-        raise RuntimeError("Embedding model not initialized. Call init_embedding_model() first.")
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail="Embedding model still loading, please wait...")
     return _model
 
 

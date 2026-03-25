@@ -1,330 +1,138 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { INDUSTRIES, CAPABILITIES } from '../utils/constants'
 import { useSessionStore } from '../store/sessionStore'
 import { createSession } from '../api/sessions'
 import { scoreSession } from '../api/scoring'
+import Navbar from '../components/layout/Navbar'
+import PhaseTargetIdentification from '../components/onboarding/PhaseTargetIdentification'
+import PhaseClientIntelligence from '../components/onboarding/PhaseClientIntelligence'
+import PhaseArsenalStack from '../components/onboarding/PhaseArsenalStack'
+import PhaseMissionObjectives from '../components/onboarding/PhaseMissionObjectives'
+import LaunchButton from '../components/onboarding/LaunchButton'
+
+const phaseLabels = ['Configure', 'Client Intel', 'Capabilities', 'Launch']
 
 export default function OnboardingPage() {
-    const navigate = useNavigate()
-    const { setSession, setTopTen, setLoading, setError, isLoading, loadingMessage, error } = useSessionStore()
+  const navigate = useNavigate()
+  const { selectedSector, setSession, setTopTen, setLoading, isLoading, loadingMessage, setError } = useSessionStore()
 
-    const [sector, setSector] = useState('')
-    const [clientName, setClientName] = useState('')
-    const [relationship, setRelationship] = useState<'new' | 'existing'>('existing')
-    const [proximity, setProximity] = useState<'low' | 'medium' | 'high'>('medium')
-    const [capabilities, setCapabilities] = useState<string[]>([])
-    const [progress, setProgress] = useState(0)
+  const [sector, setSector] = useState(selectedSector || '')
+  const [clientName, setClientName] = useState('')
+  const [relationship, setRelationship] = useState('')
+  const [proximity, setProximity] = useState('')
+  const [capabilities, setCapabilities] = useState<string[]>([])
+  const [objectives, setObjectives] = useState<string[]>([])
+  const [notes, setNotes] = useState('')
 
-    useEffect(() => {
-        if (!isLoading) { setProgress(0); return }
-        const interval = setInterval(() => {
-            setProgress((p) => Math.min(p + 0.4, 90))
-        }, 100)
-        return () => clearInterval(interval)
-    }, [isLoading])
+  const toggleCap = useCallback((cap: string) => {
+    setCapabilities(prev => prev.includes(cap) ? prev.filter(c => c !== cap) : [...prev, cap])
+  }, [])
+  const toggleObj = useCallback((obj: string) => {
+    setObjectives(prev => prev.includes(obj) ? prev.filter(o => o !== obj) : [...prev, obj])
+  }, [])
 
-    const handleCapabilityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selected = Array.from(e.target.selectedOptions, (o) => o.value)
-        setCapabilities(selected)
+  const filled = [sector, clientName, relationship, proximity].filter(Boolean).length + (capabilities.length > 0 ? 1 : 0)
+  const total = 5
+  const pct = Math.round((filled / total) * 100)
+  const canLaunch = !!sector && !!clientName && capabilities.length > 0
+
+  const handleLaunch = async () => {
+    if (!canLaunch) return
+    try {
+      setLoading(true, 'Creating session...')
+      const session = await createSession({
+        sector,
+        client_name: clientName,
+        relationship_level: relationship || undefined,
+        business_proximity: proximity || undefined,
+        capabilities: capabilities.length > 0 ? capabilities : undefined,
+        strategic_objectives: objectives.length > 0 ? objectives : undefined,
+      })
+      setSession(session)
+      setLoading(true, `Scoring ${sector} use cases...`)
+      const result = await scoreSession(session.id)
+      setTopTen(result.top_10 as any)
+      setLoading(false)
+      navigate('/radar')
+    } catch (err: any) {
+      setError(err?.message || 'Analysis failed')
+      setLoading(false)
     }
+  }
 
-    const handleSubmit = async () => {
-        if (!sector || !clientName) return
-        setLoading(true, 'Creating session...')
-        setError(null)
-        try {
-            const payload = {
-                sector,
-                client_name: clientName,
-                relationship_level: relationship,
-                business_proximity: proximity,
-                capabilities,
-                data_maturity: 'intermediate',
-                strategic_objectives: [],
-            }
-            console.log('Session payload:', payload)
-            const session = await createSession(payload)
-            setSession(session)
-            setLoading(true, 'Analyzing use cases...')
-            const result = await scoreSession(session.id)
-            setTopTen(result.top_10 as any)
-            setProgress(100)
-            setLoading(false)
-            navigate('/radar')
-        } catch (e: any) {
-            setError(e?.response?.data?.detail || 'An error occurred')
-        }
-    }
+  const sectionAnim = { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-60px' as any }, transition: { duration: 0.5 } }
 
-    const canSubmit = sector && clientName && !isLoading
-
-    const inputStyle: React.CSSProperties = {
-        background: '#111827',
-        border: '1px solid rgba(97,152,243,0.2)',
-        color: '#f0f4ff',
-        borderRadius: 8,
-        padding: '12px 16px',
-        width: '100%',
-        fontSize: 14,
-        outline: 'none',
-    }
-
-    const labelStyle: React.CSSProperties = {
-        fontSize: 11,
-        letterSpacing: 2,
-        color: '#6198F3',
-        fontWeight: 600,
-        marginBottom: 8,
-        display: 'block',
-    }
-
-    return (
-        <div style={{ background: '#080d1a', minHeight: '100vh' }}>
-            {/* Topbar */}
-            <div style={{
-                background: '#0d1425',
-                borderBottom: '1px solid rgba(97,152,243,0.1)',
-                padding: '12px 24px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-            }}>
-                <img src="/dxclogo.png" alt="DXC" style={{ height: 28 }} />
-                <button
-                    onClick={() => navigate('/')}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#6198F3',
-                        fontSize: 14,
-                        cursor: 'pointer',
-                    }}
-                >
-                    ← Back
-                </button>
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'relative', zIndex: 1 }}>
+      <Navbar />
+      <div style={{ position: 'relative', minHeight: '100vh', paddingTop: 24, paddingBottom: 100 }}>
+        {/* Progress bar — sticky under navbar */}
+        <div style={{
+          position: 'sticky', top: 64, zIndex: 40,
+          background: 'var(--bg-white)', boxShadow: 'var(--shadow-xs)',
+          borderBottom: '1px solid var(--border-light)',
+          padding: '12px 40px',
+        }}>
+          <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ flex: 1, display: 'flex', gap: 4 }}>
+              {phaseLabels.map((label, i) => (
+                <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{
+                    height: 4, borderRadius: 2,
+                    background: i < Math.ceil(filled * phaseLabels.length / total)
+                      ? 'var(--dxc-blue)' : 'var(--bg-muted)',
+                    transition: 'background 0.3s',
+                  }} />
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, color: i < Math.ceil(filled * phaseLabels.length / total) ? 'var(--dxc-blue)' : 'var(--text-dim)',
+                    textTransform: 'uppercase', letterSpacing: '0.08em',
+                  }}>
+                    {label}
+                  </span>
+                </div>
+              ))}
             </div>
-
-            {/* Form */}
-            <div style={{
-                maxWidth: 600,
-                margin: '0 auto',
-                padding: '40px 20px',
-            }}>
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f0f4ff', marginBottom: 4 }}>
-                    Mission Briefing
-                </h1>
-                <p style={{ fontSize: 14, color: '#5a6a88', marginBottom: 32 }}>
-                    Configure your AI analysis parameters
-                </p>
-
-                {/* 1. Industry Sector */}
-                <div style={{ marginBottom: 28 }}>
-                    <label style={labelStyle}>INDUSTRY SECTOR *</label>
-                    <select
-                        value={sector}
-                        onChange={(e) => setSector(e.target.value)}
-                        style={{
-                            ...inputStyle,
-                            appearance: 'auto',
-                        }}
-                    >
-                        <option value="">-- Select an industry --</option>
-                        {INDUSTRIES.map((ind) => (
-                            <option key={ind} value={ind}>{ind}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* 2. Client Name */}
-                <div style={{ marginBottom: 28 }}>
-                    <label style={labelStyle}>CLIENT NAME *</label>
-                    <input
-                        type="text"
-                        value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
-                        placeholder="e.g. Banque Nationale du Maroc"
-                        style={inputStyle}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = '#6198F3')}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(97,152,243,0.2)')}
-                    />
-                </div>
-
-                {/* 3. Relationship Level */}
-                <div style={{ marginBottom: 28 }}>
-                    <label style={labelStyle}>RELATIONSHIP LEVEL</label>
-                    <div style={{
-                        background: '#111827',
-                        borderRadius: 8,
-                        padding: 4,
-                        display: 'flex',
-                    }}>
-                        {(['new', 'existing'] as const).map((r) => (
-                            <button
-                                key={r}
-                                onClick={() => setRelationship(r)}
-                                style={{
-                                    flex: 1,
-                                    padding: '10px 24px',
-                                    borderRadius: 6,
-                                    border: 'none',
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s',
-                                    background: relationship === r ? '#6198F3' : 'transparent',
-                                    color: relationship === r ? 'white' : '#5a6a88',
-                                }}
-                            >
-                                {r === 'new' ? 'Nouveau' : 'Existant'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* 4. Business Proximity */}
-                <div style={{ marginBottom: 28 }}>
-                    <label style={labelStyle}>BUSINESS PROXIMITY</label>
-                    <div style={{
-                        background: '#111827',
-                        borderRadius: 8,
-                        padding: 4,
-                        display: 'flex',
-                    }}>
-                        {(['low', 'medium', 'high'] as const).map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setProximity(p)}
-                                style={{
-                                    flex: 1,
-                                    padding: '10px 24px',
-                                    borderRadius: 6,
-                                    border: 'none',
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s',
-                                    background: proximity === p ? '#6198F3' : 'transparent',
-                                    color: proximity === p ? 'white' : '#5a6a88',
-                                }}
-                            >
-                                {p === 'low' ? 'Faible' : p === 'medium' ? 'Moyen' : 'Fort'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* 5. AI Capabilities */}
-                <div style={{ marginBottom: 28 }}>
-                    <label style={labelStyle}>INTERNAL AI CAPABILITIES</label>
-                    <select
-                        multiple
-                        size={7}
-                        value={capabilities}
-                        onChange={handleCapabilityChange}
-                        style={{
-                            ...inputStyle,
-                            height: 180,
-                            padding: 8,
-                        }}
-                    >
-                        {CAPABILITIES.map((cap) => (
-                            <option key={cap.value} value={cap.value}>{cap.label}</option>
-                        ))}
-                    </select>
-                    <p style={{ fontSize: 11, color: '#5a6a88', marginTop: 6 }}>
-                        Hold Ctrl (Windows) or Cmd (Mac) to select multiple
-                    </p>
-                </div>
-
-                {/* Error */}
-                {error && (
-                    <div style={{
-                        background: 'rgba(233,129,102,0.1)',
-                        border: '1px solid rgba(233,129,102,0.3)',
-                        color: '#E98166',
-                        fontSize: 14,
-                        borderRadius: 8,
-                        padding: 12,
-                        marginBottom: 16,
-                    }}>
-                        {error}
-                    </div>
-                )}
-
-                {/* Submit */}
-                <button
-                    onClick={handleSubmit}
-                    disabled={!canSubmit}
-                    style={{
-                        width: '100%',
-                        padding: 14,
-                        fontSize: 15,
-                        fontWeight: 600,
-                        borderRadius: 10,
-                        border: 'none',
-                        marginTop: 32,
-                        cursor: canSubmit ? 'pointer' : 'not-allowed',
-                        transition: 'background 0.2s',
-                        background: !sector || !clientName
-                            ? '#1a2235'
-                            : isLoading
-                            ? '#334970'
-                            : '#6198F3',
-                        color: !sector || !clientName ? '#5a6a88' : '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 8,
-                    }}
-                >
-                    {isLoading && (
-                        <span style={{
-                            width: 16,
-                            height: 16,
-                            border: '2px solid rgba(255,255,255,0.3)',
-                            borderTopColor: 'transparent',
-                            borderRadius: '50%',
-                            display: 'inline-block',
-                            animation: 'spin 0.6s linear infinite',
-                        }} />
-                    )}
-                    {isLoading ? loadingMessage : 'Launch Analysis →'}
-                </button>
-
-                {/* Progress bar */}
-                {isLoading && (
-                    <div style={{
-                        marginTop: 12,
-                        height: 4,
-                        background: '#1a2235',
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                    }}>
-                        <div style={{
-                            height: '100%',
-                            width: `${progress}%`,
-                            background: '#6198F3',
-                            borderRadius: 4,
-                            transition: 'width 0.3s ease-out',
-                        }} />
-                    </div>
-                )}
-            </div>
-
-            <style>{`
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                select option {
-                    background: #111827;
-                    color: #f0f4ff;
-                    padding: 6px 8px;
-                }
-                select:focus, input:focus {
-                    border-color: #6198F3 !important;
-                }
-            `}</style>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--dxc-blue)' }}>
+              {pct}%
+            </span>
+          </div>
         </div>
-    )
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 900, margin: '0 auto', padding: '40px 40px 0' }}>
+          {/* Header */}
+          <motion.div {...sectionAnim} style={{ marginBottom: 40 }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+              Mission Briefing
+            </h1>
+            <p style={{ fontSize: 16, color: 'var(--text-secondary)' }}>
+              Configure your AI analysis parameters
+            </p>
+          </motion.div>
+
+          {/* Phases */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 56 }}>
+            <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
+              <PhaseTargetIdentification sector={sector} clientName={clientName} onSectorChange={setSector} onClientNameChange={setClientName} />
+            </motion.div>
+
+            <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
+              <PhaseClientIntelligence relationship={relationship} proximity={proximity} onRelationshipChange={setRelationship} onProximityChange={setProximity} />
+            </motion.div>
+
+            <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
+              <PhaseArsenalStack capabilities={capabilities} onToggle={toggleCap} />
+            </motion.div>
+
+            <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
+              <PhaseMissionObjectives objectives={objectives} onToggle={toggleObj} notes={notes} onNotesChange={setNotes} />
+            </motion.div>
+          </div>
+
+          {/* Launch */}
+          <LaunchButton canLaunch={canLaunch} isLoading={isLoading} loadingMessage={loadingMessage} sector={sector} onLaunch={handleLaunch} />
+        </div>
+      </div>
+    </motion.div>
+  )
 }

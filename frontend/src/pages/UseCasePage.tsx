@@ -1,240 +1,274 @@
-import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useMemo, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Canvas, useFrame } from '@react-three/fiber'
-import ReactECharts from 'echarts-for-react'
-import * as THREE from 'three'
-import { getUseCase } from '../api/usecases'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useSessionStore } from '../store/sessionStore'
-import { getArchetypeColor } from '../utils/constants'
+import { getUseCase } from '../api/usecases'
+import { exportPdf } from '../api/export'
+import { ArrowLeft, FileDown, ExternalLink, Tag, Zap, Building2, Globe, Sparkles } from 'lucide-react'
 import type { UseCase } from '../types/useCase'
 
-/* ── Background 3D node ── */
-function FloatingNode({ color }: { color: string }) {
-    const ref = useRef<THREE.Mesh>(null)
-    useFrame(({ clock }) => {
-        if (!ref.current) return
-        ref.current.rotation.y = clock.getElapsedTime() * 0.2
-        ref.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.3) * 0.1
-    })
-    return (
-        <mesh ref={ref}>
-            <icosahedronGeometry args={[1.5, 2]} />
-            <meshPhongMaterial color={color} transparent opacity={0.15} emissive={color} emissiveIntensity={0.05} />
-        </mesh>
-    )
-}
+import Navbar from '../components/layout/Navbar'
+import ScoreBadge from '../components/ui/ScoreBadge'
+import ScoreBar from '../components/ui/ScoreBar'
+import ReactECharts from 'echarts-for-react'
 
-function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
-    return (
-        <div className="mb-3">
-            <div className="flex justify-between text-xs mb-1">
-                <span className="text-app-text-muted">{label}</span>
-                <span className="font-semibold text-app-text-primary">{typeof value === 'number' ? value.toFixed(1) : value}/10</span>
-            </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: '#1a2235' }}>
-                <motion.div
-                    className="h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(value / 10) * 100}%` }}
-                    transition={{ duration: 0.6, ease: 'easeOut' }}
-                    style={{ backgroundColor: color }}
-                />
-            </div>
-        </div>
-    )
+function parseMarkdownBold(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{part.slice(2, -2)}</strong>
+    }
+    return part
+  })
 }
 
 export default function UseCasePage() {
-    const { id } = useParams<{ id: string }>()
-    const navigate = useNavigate()
-    const topTen = useSessionStore((s) => s.topTen)
-    const [useCase, setUseCase] = useState<UseCase | null>(null)
-    const [loading, setLoading] = useState(true)
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { session, topTen } = useSessionStore()
+  const [detail, setDetail] = useState<UseCase | null>(null)
+  const [exporting, setExporting] = useState(false)
 
-    const scored = topTen.find((uc) => (uc.use_case_id || uc.id) === id)
-    const nodeColor = getArchetypeColor(scored?.archetype || useCase?.agent_type)
+  const scored = useMemo(() =>
+    topTen.find(uc => (uc.use_case_id || uc.id) === id) || null
+  , [topTen, id])
 
-    useEffect(() => {
-        if (!id) return
-        setLoading(true)
-        getUseCase(id)
-            .then(setUseCase)
-            .catch(() => setUseCase(null))
-            .finally(() => setLoading(false))
-    }, [id])
+  useEffect(() => {
+    if (id) getUseCase(id).then(setDetail).catch(console.error)
+  }, [id])
 
-    const radarOption = scored ? {
-        radar: {
-            indicator: [
-                { name: 'Trend', max: 10 },
-                { name: 'Relevance', max: 10 },
-                { name: 'Capability', max: 10 },
-                { name: 'Momentum', max: 10 },
-                { name: 'Score', max: 10 },
-            ],
-            shape: 'polygon',
-            splitNumber: 5,
-            axisName: { color: '#5a6a88', fontSize: 11 },
-            splitArea: { areaStyle: { color: ['#0d1425', '#111827'] } },
-            splitLine: { lineStyle: { color: 'rgba(97,152,243,0.12)' } },
-            axisLine: { lineStyle: { color: 'rgba(97,152,243,0.15)' } },
-        },
-        series: [{
-            type: 'radar',
-            data: [{
-                value: [
-                    scored.score_breakdown?.trend_strength ?? 0,
-                    scored.score_breakdown?.client_relevance ?? 0,
-                    scored.score_breakdown?.capability_match ?? 0,
-                    scored.score_breakdown?.market_momentum ?? 0,
-                    scored.radar_score,
-                ],
-                areaStyle: { color: 'rgba(97,152,243,0.15)' },
-                lineStyle: { color: '#6198F3', width: 2 },
-                itemStyle: { color: '#FF9259' },
-            }],
-        }],
-    } : null
+  const handleExport = async () => {
+    if (!session?.id) return
+    setExporting(true)
+    try {
+      const blob = await exportPdf(session.id)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url; a.download = `AI-Radar-${detail?.title || 'report'}.pdf`; a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) { console.error(e) }
+    setExporting(false)
+  }
 
-    if (loading) {
-        return (
-            <div className="h-screen w-screen bg-app-bg flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-dxc-blue border-t-transparent rounded-full" />
-            </div>
-        )
+  const radarOption = useMemo(() => {
+    const axes = scored?.radar_axes
+    const values = axes ? [axes.roi_potential, axes.technical_complexity, axes.market_maturity, axes.regulatory_risk, axes.quick_win_potential] : [0,0,0,0,0]
+    return {
+      radar: {
+        indicator: [
+          { name: 'ROI', max: 10 }, { name: 'Tech', max: 10 },
+          { name: 'Market', max: 10 }, { name: 'Risk', max: 10 }, { name: 'Quick Win', max: 10 },
+        ],
+        shape: 'circle', splitNumber: 4,
+        axisName: { color: '#6b7280', fontSize: 11, fontWeight: 600 },
+        splitLine: { lineStyle: { color: '#e5e7eb', type: 'dashed' } },
+        splitArea: { areaStyle: { color: ['rgba(90,141,232,0.02)', 'transparent'] } },
+        axisLine: { lineStyle: { color: '#e5e7eb' } },
+      },
+      series: [{ type: 'radar', data: [{ value: values, lineStyle: { color: '#5a8de8', width: 2.5 }, areaStyle: { color: 'rgba(90,141,232,0.2)' }, itemStyle: { color: '#fff', borderColor: '#5a8de8', borderWidth: 2.5 } }], animationDuration: 1200 }],
     }
+  }, [scored])
 
-    if (!useCase) {
-        return (
-            <div className="h-screen w-screen bg-app-bg flex items-center justify-center">
-                <p className="text-app-text-muted">Use case not found.</p>
-            </div>
-        )
-    }
+  const bars = [
+    { key: 'trend_strength' as const, label: 'Trend Strength', color: 'var(--dxc-blue)' },
+    { key: 'client_relevance' as const, label: 'Client Relevance', color: 'var(--dxc-orange)' },
+    { key: 'capability_match' as const, label: 'Capability Match', color: 'var(--accent-emerald)' },
+    { key: 'market_momentum' as const, label: 'Market Momentum', color: 'var(--accent-purple)' },
+  ]
 
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-screen w-screen bg-app-bg relative overflow-y-auto"
-        >
-            {/* Background 3D */}
-            <div className="fixed inset-0 z-0 opacity-30 pointer-events-none">
-                <Canvas
-                    camera={{ position: [0, 0, 5], fov: 50 }}
-                    onCreated={({ gl }) => gl.setClearColor('#080d1a')}
-                >
-                    <ambientLight intensity={0.4} />
-                    <FloatingNode color={nodeColor} />
-                </Canvas>
-            </div>
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'relative', zIndex: 1 }}>
+      <Navbar />
+      <div style={{ minHeight: '100vh' }}>
+        {/* Header */}
+        <div style={{
+          padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          borderBottom: '1px solid var(--border-light)', background: 'var(--bg-white)',
+        }}>
+          <button onClick={() => navigate('/radar')} className="btn btn-ghost" style={{ fontSize: 13 }}>
+            <ArrowLeft size={14} /> Back to Results
+          </button>
+          <button onClick={handleExport} disabled={exporting} className="btn btn-primary" style={{ fontSize: 13, padding: '8px 18px' }}>
+            <FileDown size={14} /> {exporting ? 'Exporting...' : 'Export PDF'}
+          </button>
+        </div>
 
-            {/* Content */}
-            <div className="relative z-10 max-w-6xl mx-auto p-8 flex gap-8">
-                {/* Left column (40%) */}
-                <div className="w-[40%]">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="text-sm text-dxc-blue hover:text-app-text-primary mb-6 inline-block transition"
-                    >
-                        Control Room
-                    </button>
-
-                    {scored && (
-                        <>
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="bg-dxc-orange text-white text-sm font-bold px-3 py-1 rounded-full">
-                                    #{scored.rank}
-                                </span>
-                                <span className="text-3xl font-bold text-app-text-primary">
-                                    {scored.radar_score.toFixed(2)}
-                                </span>
-                                <span className="text-app-text-muted text-sm">/10</span>
-                            </div>
-
-                            {/* Radar chart */}
-                            {radarOption && (
-                                <div className="rounded-xl p-4 mb-4" style={{ background: '#111827', border: '1px solid rgba(97,152,243,0.1)' }}>
-                                    <ReactECharts option={radarOption} style={{ height: 220 }} />
-                                </div>
-                            )}
-
-                            {/* Score bars */}
-                            <div className="rounded-xl p-4 mb-4" style={{ background: '#111827', border: '1px solid rgba(97,152,243,0.1)' }}>
-                                <ScoreBar label="Trend Strength" value={scored.score_breakdown?.trend_strength ?? 0} color="#6198F3" />
-                                <ScoreBar label="Client Relevance" value={scored.score_breakdown?.client_relevance ?? 0} color="#FF9259" />
-                                <ScoreBar label="Capability Match" value={scored.score_breakdown?.capability_match ?? 0} color="#4ade80" />
-                                <ScoreBar label="Market Momentum" value={scored.score_breakdown?.market_momentum ?? 0} color="#6198F3" />
-                            </div>
-                        </>
-                    )}
-
-                    {useCase.company_example && (
-                        <p className="text-xs text-app-text-muted mb-2">Company: {useCase.company_example}</p>
-                    )}
-                    <a href={useCase.source_url} target="_blank" rel="noopener noreferrer" className="text-xs text-dxc-blue hover:underline">
-                        {useCase.source_name}
-                    </a>
+        {/* Content */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px', display: 'grid', gridTemplateColumns: '340px 1fr', gap: 40 }}>
+          {/* LEFT — Score Hero */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Score Circle */}
+            <div className="card" style={{ padding: 32, textAlign: 'center', background: 'var(--bg-white)' }}>
+              <ScoreBadge score={scored?.radar_score || 0} size="lg" />
+              {scored && (
+                <div style={{ marginTop: 12 }}>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
+                    background: scored.rank <= 3 ? 'var(--score-high)' : 'var(--dxc-blue)',
+                    color: 'white',
+                    padding: '4px 12px', borderRadius: 'var(--radius-full)',
+                  }}>
+                    Rank #{scored.rank}
+                  </span>
                 </div>
-
-                {/* Right column (60%) */}
-                <div className="w-[60%]">
-                    <h1 className="text-2xl font-bold text-app-text-primary mb-2 mt-10">{useCase.title}</h1>
-                    <p className="text-sm text-app-text-secondary leading-relaxed mb-6">{useCase.description}</p>
-
-                    {useCase.business_challenge && (
-                        <div className="rounded-xl p-5 mb-4" style={{ background: '#111827', border: '1px solid rgba(97,152,243,0.1)' }}>
-                            <h3 className="text-sm font-semibold text-app-text-primary mb-2">Business Challenge</h3>
-                            <p className="text-sm text-app-text-secondary">{useCase.business_challenge}</p>
-                        </div>
-                    )}
-
-                    {useCase.ai_solution && (
-                        <div className="rounded-xl p-5 mb-4" style={{ background: '#111827', border: '1px solid rgba(97,152,243,0.1)' }}>
-                            <h3 className="text-sm font-semibold text-app-text-primary mb-2">AI Solution</h3>
-                            <p className="text-sm text-app-text-secondary">{useCase.ai_solution}</p>
-                        </div>
-                    )}
-
-                    {/* Functions */}
-                    {useCase.functions && useCase.functions.length > 0 && (
-                        <div className="mb-4">
-                            <h3 className="text-sm font-semibold text-app-text-primary mb-2">Functions</h3>
-                            <ul className="space-y-1">
-                                {useCase.functions.map((b, i) => (
-                                    <li key={i} className="text-sm text-app-text-secondary flex items-start gap-2">
-                                        <span className="text-dxc-orange mt-0.5">-</span> {b}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {/* Tech keywords as tags */}
-                    {useCase.tech_keywords && useCase.tech_keywords.length > 0 && (
-                        <div className="mb-4">
-                            <h3 className="text-sm font-semibold text-app-text-primary mb-2">Data Prerequisites</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {useCase.tech_keywords.map((kw, i) => (
-                                    <span key={i} className="text-app-text-secondary text-xs px-3 py-1 rounded-full" style={{ background: 'rgba(97,152,243,0.08)', border: '1px solid rgba(97,152,243,0.15)' }}>
-                                        {kw}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Justification */}
-                    {scored?.justification && (
-                        <div className="border-l-2 border-dxc-blue rounded-r-xl p-5 mb-4" style={{ background: '#111827' }}>
-                            <h3 className="text-sm font-semibold text-app-text-primary mb-2">Justification</h3>
-                            <p className="text-sm text-app-text-secondary italic leading-relaxed">{scored.justification}</p>
-                        </div>
-                    )}
-                </div>
+              )}
             </div>
-        </motion.div>
-    )
+
+            {/* Mini Radar */}
+            <div className="card" style={{ padding: 16, background: 'var(--bg-white)' }}>
+              <ReactECharts option={radarOption} style={{ width: '100%', height: 260 }} opts={{ renderer: 'svg' }} />
+            </div>
+
+            {/* Score Bars */}
+            {scored && (
+              <div className="card" style={{ padding: 20, background: 'var(--bg-white)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {bars.map((b, i) => (
+                  <ScoreBar key={b.key} label={b.label} value={scored.score_breakdown[b.key]} max={10} color={b.color} delay={i * 0.1} />
+                ))}
+              </div>
+            )}
+
+            {/* Metadata */}
+            <div className="card" style={{ padding: 20, background: 'var(--bg-white)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {scored?.company_example && (
+                <MetaRow icon={<Building2 size={14} />} label="Company" value={scored.company_example} />
+              )}
+              {(detail?.source_url || scored?.source_url) && (
+                <MetaRow icon={<Globe size={14} />} label="Source"
+                  value={<a href={detail?.source_url || scored?.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dxc-blue)', fontSize: 13 }}>
+                    {detail?.source_name || scored?.source_name || 'View'} <ExternalLink size={10} style={{ display: 'inline' }} />
+                  </a>}
+                />
+              )}
+              {scored?.archetype && (
+                <MetaRow icon={<Tag size={14} />} label="Archetype"
+                  value={<span className="chip chip--active" style={{ fontSize: 11, padding: '2px 8px' }}>{scored.archetype}</span>}
+                />
+              )}
+              {scored?.quick_win && (
+                <MetaRow icon={<Zap size={14} />} label="Quick Win"
+                  value={<span style={{ color: 'var(--accent-emerald)', fontWeight: 600, fontSize: 13 }}>Yes — fast implementation</span>}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT — Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Title */}
+            <div>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 8 }}>
+                {detail?.title || scored?.title || 'Loading...'}
+              </h1>
+              {scored?.company_example && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'var(--bg-muted)', border: '1px solid var(--border-light)',
+                  padding: '4px 12px', borderRadius: 'var(--radius-full)',
+                  fontSize: 12, color: 'var(--text-secondary)',
+                }}>
+                  <Building2 size={12} /> {scored.company_example}
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            {detail?.description && (
+              <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Description
+                </h3>
+                <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  {detail.description}
+                </p>
+              </div>
+            )}
+
+            {/* AI Solution */}
+            {detail?.ai_solution && (
+              <div style={{ padding: 24, background: 'var(--bg-soft)', borderRadius: 12 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  AI Solution
+                </h3>
+                <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  {detail.ai_solution}
+                </p>
+              </div>
+            )}
+
+            {/* Benefits */}
+            {detail?.measurable_benefit && (
+              <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Benefits
+                </h3>
+                <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {detail.measurable_benefit.split(/[;,\n]/).filter(Boolean).map((b, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'var(--text-secondary)' }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--dxc-orange)', marginTop: 7, flexShrink: 0 }} />
+                      {b.trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Justification — highlighted */}
+            {scored?.justification && (
+              <div style={{
+                padding: 24, background: 'var(--dxc-orange-light)',
+                borderRadius: 12,
+                borderLeft: '4px solid var(--dxc-orange)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+                  <Sparkles size={14} style={{ color: 'var(--dxc-orange)' }} />
+                  <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--dxc-orange)' }}>
+                    AI-Generated Justification
+                  </span>
+                </div>
+                <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8, fontStyle: 'italic' }}>
+                  {parseMarkdownBold(scored.justification)}
+                </p>
+                <div style={{
+                  marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'var(--bg-white)', padding: '4px 12px', borderRadius: 'var(--radius-full)',
+                  fontSize: 11, color: 'var(--text-dim)',
+                }}>
+                  Powered by Mistral Small · Contextualised for {session?.client_name || 'client'}
+                </div>
+              </div>
+            )}
+
+            {/* Tech Keywords */}
+            {detail?.tech_keywords && detail.tech_keywords.length > 0 && (
+              <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Data Prerequisites
+                </h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {detail.tech_keywords.map(kw => (
+                    <span key={kw} style={{
+                      background: 'var(--bg-muted)', border: '1px solid var(--border-light)',
+                      padding: '4px 12px', borderRadius: 'var(--radius-full)',
+                      fontSize: 12, color: 'var(--text-secondary)',
+                    }}>{kw}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function MetaRow({ icon, label, value }: { icon: React.ReactNode, label: string, value: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <span style={{ color: 'var(--text-dim)', flexShrink: 0 }}>{icon}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-dim)', minWidth: 70 }}>{label}</span>
+      <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{value}</span>
+    </div>
+  )
 }

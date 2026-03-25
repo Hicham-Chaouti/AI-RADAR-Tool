@@ -1,5 +1,6 @@
 """AI Radar DXC — FastAPI application entry point."""
 
+import asyncio
 from contextlib import asynccontextmanager
 
 import redis.asyncio as aioredis
@@ -14,6 +15,16 @@ from app.services.embedding_service import init_embedding_model
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+async def _load_embedding_model_background():
+    """Load embedding model in a background thread so it doesn't block startup."""
+    try:
+        logger.info("Loading embedding model in background...")
+        await asyncio.to_thread(init_embedding_model)
+        logger.info("Embedding model loaded successfully")
+    except Exception as e:
+        logger.error(f"Failed to load embedding model: {e}")
 
 
 @asynccontextmanager
@@ -32,10 +43,10 @@ async def lifespan(app: FastAPI):
     set_qdrant(qdrant_client)
     logger.info("Qdrant connected")
 
-    # ── Embedding model ──────────────────────────────────────
-    init_embedding_model()
+    # ── Embedding model — load in background, non-blocking ──
+    asyncio.create_task(_load_embedding_model_background())
 
-    logger.info("All services initialized")
+    logger.info("Backend started (embedding model loading in background)")
     yield
 
     # ── Shutdown ─────────────────────────────────────────────
