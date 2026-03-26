@@ -1,0 +1,257 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "viewSource": "Voir la source",
+    "yesFastImplementation": "Oui - implementation rapide"
+  },
+  "language": {
+    "label": "Langue",
+    "english": "EN",
+    "french": "FR"
+  },
+  "navbar": {
+    "back": "Retour",
+    "platform": "Plateforme",
+    "methodology": "Methodologie",
+    "startAnalysis": "Lancer l'analyse",
+    "signIn": "Se connecter",
+    "brand": "AI Radar"
+  },
+  "search": {
+    "placeholder": "Rechercher..."
+  },
+  "actions": {
+    "readMore": "Lire plus",
+    "viewFullDetails": "Voir les details",
+    "newAnalysis": "Nouvelle analyse",
+    "exportPdf": "Exporter PDF",
+    "exporting": "Export en cours..."
+  },
+  "radar": {
+    "topTen": "Top 10",
+    "results": "resultats",
+    "quickWin": "Gain rapide",
+    "rank": "Rang #{{rank}}",
+    "backToResults": "Retour aux resultats",
+    "company": "Entreprise",
+    "source": "Source",
+    "archetype": "Archetype",
+    "description": "Description",
+    "aiSolution": "Solution IA",
+    "benefits": "Benefices",
+    "dataPrerequisites": "Prerequis de donnees",
+    "generatedJustification": "Justification generee par IA",
+    "poweredBy": "Propulse par Mistral Small - contextualise pour {{client}}"
+  },
+  "onboarding": {
+    "launchAnalysis": "Lancer l'analyse",
+    "analyzingSector": "Analyse des cas d'usage dans {{sector}}...",
+    "progress": {
+      "configure": "Configurer",
+      "clientIntel": "Infos client",
+      "capabilities": "Capacites",
+      "launch": "Lancement"
+    },
+    "page": {
+      "title": "Brief de mission",
+      "subtitle": "Configurez les parametres de votre analyse IA"
+    },
+    "loading": {
+      "creatingSession": "Creation de la session...",
+      "scoringUseCases": "Evaluation des cas d'usage {{sector}}...",
+      "analysisFailed": "Echec de l'analyse"
+    },
+    "target": {
+      "sectionLabel": "IDENTIFICATION CIBLE",
+      "title": "Profil client",
+      "subtitle": "Definissez votre client cible et son secteur.",
+      "clientNameLabel": "Nom du client",
+      "clientNamePlaceholder": "ex. Attijariwafa Bank",
+      "detectingSector": "Detection du secteur en cours...",
+      "detectedHigh": "Secteur identifie",
+      "detectedMedium": "Secteur deduit du nom",
+      "detectedLow": "Meilleure estimation",
+      "detectError": "Detection automatique impossible. Selectionnez manuellement.",
+      "industrySectorLabel": "Secteur d'activite",
+      "aiConfirmed": "IA confirmee",
+      "aiSuggested": "IA suggeree",
+      "changeManually": "Modifier manuellement",
+      "selectIndustry": "Selectionnez un secteur...",
+      "sectorDetectedByAi": "Secteur detecte par IA",
+      "sectorIntel": "Analyse secteur",
+      "sectorIntelBody": "Des cas d'usage IA existent pour ce secteur. L'analyse fera ressortir les 10 meilleures opportunites."
+    },
+    "clientIntel": {
+      "sectionLabel": "INTELLIGENCE CLIENT",
+      "title": "Contexte de relation",
+      "subtitle": "Aidez-nous a comprendre la relation client pour un meilleur scoring.",
+      "relationshipLevelLabel": "Niveau de relation",
+      "businessProximityLabel": "Proximite business",
+      "relationship": {
+        "new": {
+          "label": "Nouveau client",
+          "desc": "Premiere mission - mode decouverte"
+        },
+        "existing": {
+          "label": "Client existant",
+          "desc": "Partenariat en cours - contexte approfondi"
+        }
+      },
+      "proximity": {
+        "low": {
+          "label": "Faible",
+          "desc": "Interaction limitee"
+        },
+        "medium": {
+          "label": "Moyenne",
+          "desc": "Relation reguliere"
+        },
+        "high": {
+          "label": "Elevee",
+          "desc": "Partenaire strategique"
+        }
+      }
+    },
+    "arsenal": {
+      "sectionLabel": "ARSENAL & STACK",
+      "title": "Capacites IA",
+      "subtitle": "Selectionnez les capacites pertinentes pour le client.",
+      "selectedCount": "{{count}} capacites selectionnees",
+      "groups": {
+        "coreAi": "IA coeur",
+        "specialized": "Specialise",
+        "infrastructure": "Infrastructure",
+        "development": "Developpement"
+      }
+    },
+    "objectives": {
+      "sectionLabel": "OBJECTIFS DE MISSION",
+      "title": "Objectifs strategiques",
+      "subtitle": "Que veut accomplir le client avec l'IA ?",
+      "additionalContextLabel": "Contexte additionnel (optionnel)",
+      "additionalContextPlaceholder": "Contraintes, exigences ou contexte specifique...",
+      "options": {
+        "reduceCosts": "Reduire les couts operationnels",
+        "improveCx": "Ameliorer l'experience client",
+        "accelerateTransformation": "Accelerer la transformation digitale",
+        "enhanceCompliance": "Renforcer conformite et gouvernance",
+        "driveRevenue": "Stimuler la croissance des revenus",
+        "optimizeSupplyChain": "Optimiser la supply chain",
+        "boostProductivity": "Augmenter la productivite des equipes"
+      }
+    }
+  },
+  "landing": {
+    "hero": {
+      "rating": "4.8/5",
+      "trustedBy": "Adopte par 300+ consultants",
+      "titlePrefix": "Radar d'opportunites IA pour",
+      "titleAccent": "consultants DXC",
+      "subtitle": "Identifiez les 10 meilleures opportunites IA pour tout client en moins de 60 secondes via notre base de 1 068 cas d'usage.",
+      "startCta": "Lancer l'analyse",
+      "methodologyCta": "Methodologie",
+      "stats": {
+        "use_cases_analyzed": "cas d'usage analyses",
+        "industry_sectors": "secteurs couverts",
+        "knowledge_sources": "sources de connaissance",
+        "analysis_time": "temps d'analyse"
+      }
+    },
+    "sources": {
+      "title": "Base de connaissances alimentee par",
+      "blueprints": "Blueprints",
+      "blueprintProvider": "Google Cloud",
+      "counts": {
+        "googleCloud": "933 cas d'usage",
+        "ibm": "47 cas d'usage",
+        "salesforce": "57 cas d'usage",
+        "blueprints": "31 cas d'usage",
+        "benchmark": "Reference benchmark",
+        "comingV2": "Bientot V2"
+      },
+      "badges": {
+        "calibrationOnly": "Calibration uniquement",
+        "comingV2": "Bientot V2"
+      }
+    },
+    "dashboard": {
+      "top5Title": "Top 5 opportunites IA",
+      "items": {
+        "fraudDetection": "Detection de fraude par IA",
+        "churnPrediction": "Prediction de churn client",
+        "docAutomation": "Automatisation du traitement documentaire",
+        "predictiveMaintenance": "Moteur de maintenance predictive",
+        "supportChatbot": "Chatbot IA pour le support"
+      }
+    },
+    "process": {
+      "badge": "Processus",
+      "title": "De l'echange au plan d'action en 4 etapes",
+      "subtitle": "Une methode claire qui garantit des resultats transparents et auditables.",
+      "steps": {
+        "discovery": {
+          "title": "Decouverte",
+          "desc": "Selectionnez le secteur, saisissez le client, puis precisez relation et capacites IA."
+        },
+        "analysis": {
+          "title": "Analyse",
+          "desc": "Qdrant parcourt 1 068 cas d'usage vectorises avec une recherche de similarite."
+        },
+        "scoring": {
+          "title": "Scoring",
+          "desc": "Score pondere sur 4 criteres : tendance 25 % + pertinence 30 % + capacite 25 % + momentum 20 %."
+        },
+        "delivery": {
+          "title": "Livrable",
+          "desc": "Radar interactif, top 10, justifications IA et export PDF."
+        }
+      }
+    },
+    "features": {
+      "badge": "Pourquoi AI Radar",
+      "title": "Votre avantage pour identifier les opportunites IA",
+      "subtitle": "Nous combinons IA avancee et methode structuree pour livrer des resultats en moins de 60 secondes.",
+      "items": {
+        "realUseCases": {
+          "title": "1 068 cas d'usage reels",
+          "desc": "Chaque cas d'usage est rattache a une source publique verifiable."
+        },
+        "interactiveRadar": {
+          "title": "Radar interactif",
+          "desc": "Visualisation sur 5 axes : ROI, complexite, maturite, risque, quick win."
+        },
+        "aiJustifications": {
+          "title": "Justifications generees par IA",
+          "desc": "Mistral Small contextualise chaque recommandation pour votre client."
+        },
+        "under60s": {
+          "title": "Moins de 60 secondes",
+          "desc": "Du profil client au plan classe en un clic, sans recherche manuelle."
+        },
+        "pdfExport": {
+          "title": "Export PDF",
+          "desc": "Rapport professionnel pret a partager : radar, scores et justifications."
+        },
+        "transparentScoring": {
+          "title": "Scoring transparent",
+          "desc": "4 criteres documentes avec des poids explicites."
+        }
+      }
+    },
+    "sectors": {
+      "badge": "Couverture",
+      "title": "13 secteurs d'activite",
+      "subtitle": "Cliquez sur un secteur pour lancer l'analyse",
+      "useCasesCount": "{{count}} cas d'usage"
+    },
+    "cta": {
+      "title": "Pret a decouvrir vos opportunites IA ?",
+      "subtitle": "Rejoignez les consultants DXC qui utilisent l'IA pour gagner plus d'affaires.",
+      "footnote": "Sans compte - Resultats en < 60 secondes"
+    }
+  },
+  "footer": {
+    "byDxc": "par DXC Technology",
+    "copyright": "© {{year}} DXC Technology · Outil interne"
+  }
+}

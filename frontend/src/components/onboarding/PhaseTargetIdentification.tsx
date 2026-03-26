@@ -4,6 +4,7 @@ import { INDUSTRIES } from '../../utils/constants'
 import { detectSector, DetectSectorResult } from '../../api/detectSector'
 import SectionLabel from '../ui/SectionLabel'
 import { Building2, ChevronDown } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   sector: string
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function PhaseTargetIdentification({ sector, clientName, onSectorChange, onClientNameChange }: Props) {
+  const { t } = useTranslation()
   const [isDetecting, setIsDetecting] = useState(false)
   const [detected, setDetected] = useState<DetectSectorResult | null>(null)
   const [detectError, setDetectError] = useState(false)
@@ -63,12 +65,12 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
 
   return (
     <div>
-      <SectionLabel number="01" title="TARGET IDENTIFICATION" />
+      <SectionLabel number="01" title={t('onboarding.target.sectionLabel')} />
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-        Client Profile
+        {t('onboarding.target.title')}
       </h3>
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 32 }}>
-        Define your target client and industry sector.
+        {t('onboarding.target.subtitle')}
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 32, alignItems: 'start' }}>
@@ -77,12 +79,12 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
           {/* Client Name — first so the agent can detect the sector */}
           <div>
             <label style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, display: 'block' }}>
-              Client Name
+              {t('onboarding.target.clientNameLabel')}
             </label>
             <input
               className="input"
               type="text"
-              placeholder="e.g. Attijariwafa Bank"
+              placeholder={t('onboarding.target.clientNamePlaceholder')}
               value={clientName}
               onChange={e => onClientNameChange(e.target.value)}
             />
@@ -101,7 +103,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                     <svg width="14" height="14" viewBox="0 0 14 14" style={{ animation: 'spin 1s linear infinite' }}>
                       <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray="20 20" />
                     </svg>
-                    Detecting industry sector...
+                    {t('onboarding.target.detectingSector')}
                   </motion.span>
                 )}
 
@@ -121,8 +123,8 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                       <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
                       <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    {detected.confidence === 'high' ? 'Sector identified' :
-                     detected.confidence === 'medium' ? 'Sector inferred from name' : 'Best guess'}
+                    {detected.confidence === 'high' ? t('onboarding.target.detectedHigh') :
+                     detected.confidence === 'medium' ? t('onboarding.target.detectedMedium') : t('onboarding.target.detectedLow')}
                     {' — '}{detected.reasoning}
                   </motion.span>
                 )}
@@ -135,7 +137,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                     exit={{ opacity: 0 }}
                     style={{ color: 'var(--text-dim)', fontSize: 12 }}
                   >
-                    Could not auto-detect sector. Please select manually.
+                    {t('onboarding.target.detectError')}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -145,7 +147,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
           {/* Industry Sector — auto-filled or manual */}
           <div>
             <label style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, display: 'block' }}>
-              Industry Sector
+              {t('onboarding.target.industrySectorLabel')}
             </label>
 
             {sectorLocked && detected ? (
@@ -170,7 +172,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                     color: detected.confidence === 'high' ? 'var(--score-high)' : 'var(--score-mid)',
                     fontWeight: 600,
                   }}>
-                    {detected.confidence === 'high' ? 'AI Confirmed' : 'AI Suggested'}
+                    {detected.confidence === 'high' ? t('onboarding.target.aiConfirmed') : t('onboarding.target.aiSuggested')}
                   </span>
                 </div>
                 <button
@@ -180,7 +182,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                     fontSize: 12, cursor: 'pointer', textDecoration: 'underline', padding: '4px 8px',
                   }}
                 >
-                  Change manually
+                  {t('onboarding.target.changeManually')}
                 </button>
               </div>
             ) : (
@@ -191,7 +193,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                   onChange={e => onSectorChange(e.target.value)}
                   style={{ appearance: 'none', paddingRight: 40, cursor: 'pointer' }}
                 >
-                  <option value="">Select an industry...</option>
+                  <option value="">{t('onboarding.target.selectIndustry')}</option>
                   {INDUSTRIES.map(ind => (
                     <option key={ind} value={ind}>{ind}</option>
                   ))}
@@ -220,14 +222,14 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                 color: intelFlash ? 'var(--score-high)' : 'var(--dxc-blue)',
                 transition: 'color 0.3s',
               }}>
-                {intelFlash ? 'Sector detected by AI' : 'Sector Intel'}
+                {intelFlash ? t('onboarding.target.sectorDetectedByAi') : t('onboarding.target.sectorIntel')}
               </span>
             </div>
             <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
               {sector}
             </p>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              AI use cases available in the knowledge base for this sector. Analysis will surface the top 10 matching opportunities.
+              {t('onboarding.target.sectorIntelBody')}
             </p>
           </motion.div>
         )}

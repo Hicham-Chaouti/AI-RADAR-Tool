@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import type { UseCaseScored } from '../../types/useCase'
 import ScoreBadge from '../ui/ScoreBadge'
 import { ArrowRight, ExternalLink, Tag, X } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
+import { useLocalizedDynamicText } from '../../hooks/useLocalizedDynamicText'
 
 interface Props {
   item: UseCaseScored | null
@@ -10,6 +12,9 @@ interface Props {
 }
 
 export default function QuickPreviewPanel({ item, onClose }: Props) {
+  const { t } = useTranslation()
+  const { text: translatedSummary } = useLocalizedDynamicText(item?.justification || item?.title || '')
+
   return (
     <AnimatePresence>
       {item && (
@@ -38,15 +43,15 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
                 color: 'var(--dxc-blue)', background: 'var(--dxc-blue-light)',
                 padding: '2px 8px', borderRadius: 'var(--radius-full)',
               }}>
-                Rank #{item.rank}
+                {t('radar.rank', { rank: item.rank })}
               </span>
             </div>
           </div>
 
-          {/* Title */}
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3, marginBottom: 12 }}>
-            {item.title}
-          </h3>
+          {/* Description preview */}
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
+            {translatedSummary}
+          </p>
 
           {/* Justification */}
           {item.justification && (
@@ -95,7 +100,7 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
               boxShadow: 'var(--shadow-blue)',
             }}
           >
-            View Full Details <ArrowRight size={14} />
+            {t('actions.viewFullDetails')} <ArrowRight size={14} />
           </Link>
 
           {/* Source */}
@@ -110,7 +115,7 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
               }}
             >
               <ExternalLink size={11} />
-              {item.source_name || 'View source'}
+              {item.source_name || t('common.viewSource')}
             </a>
           )}
         </motion.div>

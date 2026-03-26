@@ -1,5 +1,6 @@
 import SectionLabel from '../ui/SectionLabel'
 import ChipSelect from '../ui/ChipSelect'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   objectives: string[]
@@ -8,25 +9,27 @@ interface Props {
   onNotesChange: (n: string) => void
 }
 
-const objectiveOptions = [
-  'Reduce operational costs',
-  'Improve customer experience',
-  'Accelerate digital transformation',
-  'Enhance compliance & governance',
-  'Drive revenue growth',
-  'Optimize supply chain',
-  'Boost employee productivity',
-]
-
 export default function PhaseMissionObjectives({ objectives, onToggle, notes, onNotesChange }: Props) {
+  const { t } = useTranslation()
+
+  const objectiveOptions = [
+    t('onboarding.objectives.options.reduceCosts'),
+    t('onboarding.objectives.options.improveCx'),
+    t('onboarding.objectives.options.accelerateTransformation'),
+    t('onboarding.objectives.options.enhanceCompliance'),
+    t('onboarding.objectives.options.driveRevenue'),
+    t('onboarding.objectives.options.optimizeSupplyChain'),
+    t('onboarding.objectives.options.boostProductivity'),
+  ]
+
   return (
     <div>
-      <SectionLabel number="04" title="MISSION OBJECTIVES" />
+      <SectionLabel number="04" title={t('onboarding.objectives.sectionLabel')} />
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: 'var(--text-heading)', marginBottom: 8 }}>
-        Strategic Objectives
+        {t('onboarding.objectives.title')}
       </h3>
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 28 }}>
-        What does the client want to achieve with AI?
+        {t('onboarding.objectives.subtitle')}
       </p>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 28 }}>
@@ -42,12 +45,12 @@ export default function PhaseMissionObjectives({ objectives, onToggle, notes, on
 
       <div>
         <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-heading)', marginBottom: 6, display: 'block' }}>
-          Additional context (optional)
+          {t('onboarding.objectives.additionalContextLabel')}
         </label>
         <textarea
           className="input"
           rows={3}
-          placeholder="Any specific requirements, constraints or context..."
+          placeholder={t('onboarding.objectives.additionalContextPlaceholder')}
           value={notes}
           onChange={e => onNotesChange(e.target.value)}
           style={{ resize: 'vertical', minHeight: 80 }}

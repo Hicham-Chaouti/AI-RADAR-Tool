@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 export default function Navbar() {
   const location = useLocation()
+  const { language, setLanguage, t } = useTranslation()
   const [scrolled, setScrolled] = useState(false)
   const isInternal = location.pathname !== '/'
 
@@ -14,9 +16,9 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { label: 'Platform', href: '/' },
-    { label: 'Methodology', href: '/how-it-works' },
-    { label: 'Start Analysis', href: '/onboarding' },
+    { label: t('navbar.platform'), href: '/' },
+    { label: t('navbar.methodology'), href: '/how-it-works' },
+    { label: t('navbar.startAnalysis'), href: '/onboarding' },
   ]
 
   return (
@@ -34,7 +36,7 @@ export default function Navbar() {
         {isInternal && (
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
             <ArrowLeft size={16} />
-            Back
+            {t('navbar.back')}
           </Link>
         )}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
@@ -44,7 +46,7 @@ export default function Navbar() {
             style={{ height: 32, width: 'auto' }}
           />
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            AI Radar
+            {t('navbar.brand')}
           </span>
         </Link>
       </div>
@@ -71,8 +73,37 @@ export default function Navbar() {
 
       {/* Right */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', border: '1px solid var(--border-light)',
+          borderRadius: 999, overflow: 'hidden', background: 'var(--bg-muted)',
+        }}>
+          <button
+            type="button"
+            onClick={() => setLanguage('en')}
+            aria-label="Switch language to English"
+            style={{
+              border: 'none', padding: '6px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              color: language === 'en' ? 'white' : 'var(--text-secondary)',
+              background: language === 'en' ? 'var(--dxc-blue)' : 'transparent',
+            }}
+          >
+            {t('language.english')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage('fr')}
+            aria-label="Switch language to French"
+            style={{
+              border: 'none', padding: '6px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              color: language === 'fr' ? 'white' : 'var(--text-secondary)',
+              background: language === 'fr' ? 'var(--dxc-blue)' : 'transparent',
+            }}
+          >
+            {t('language.french')}
+          </button>
+        </div>
         <span style={{ fontSize: 14, color: 'var(--text-secondary)', cursor: 'pointer' }}>
-          Sign In
+          {t('navbar.signIn')}
         </span>
         <Link to="/onboarding" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -82,7 +113,7 @@ export default function Navbar() {
           boxShadow: 'var(--shadow-blue)',
           transition: 'all 0.25s',
         }}>
-          Start Analysis <ArrowRight size={14} />
+          {t('navbar.startAnalysis')} <ArrowRight size={14} />
         </Link>
       </div>
     </nav>

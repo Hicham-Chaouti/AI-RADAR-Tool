@@ -10,6 +10,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import hashlib
 import logging
 import sys
 import time
@@ -27,10 +28,10 @@ from app.config import settings  # noqa: E402
 
 # ─── Config ─────────────────────────────────────────────────
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-ENRICHED_FILE = DATA_DIR / "seed_use_cases_enriched.json"
+ENRICHED_FILE = DATA_DIR / "seed_use_cases_anonymized.json"
 
-EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B"
-VECTOR_DIM = 1024
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+VECTOR_DIM = 384
 BATCH_SIZE = 32
 COLLECTION_NAME = settings.QDRANT_COLLECTION
 
@@ -40,6 +41,12 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 log = logging.getLogger("seed_qdrant")
+
+
+def stable_point_id(raw_id: str) -> int:
+    """Return a deterministic positive int64 id from a string id."""
+    digest = hashlib.sha256(raw_id.encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "big") & ((1 << 63) - 1)
 
 
 def build_embedding_text(record: dict) -> str:
@@ -119,19 +126,20 @@ def main() -> None:
     qdrant = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
     log.info(f"Connected to Qdrant at {settings.QDRANT_HOST}:{settings.QDRANT_PORT}")
 
-    # ─── Create collection if not exists ─────────────────────
+    # ─── Recreate collection for clean/idempotent reseeds ────
     collections = [c.name for c in qdrant.get_collections().collections]
-    if COLLECTION_NAME not in collections:
-        qdrant.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=VectorParams(
-                size=VECTOR_DIM,
-                distance=Distance.COSINE,
-            ),
-        )
-        log.info(f"Created collection '{COLLECTION_NAME}' (dim={VECTOR_DIM}, cosine)")
-    else:
-        log.info(f"Collection '{COLLECTION_NAME}' already exists")
+    if COLLECTION_NAME in collections:
+        qdrant.delete_collection(collection_name=COLLECTION_NAME)
+        log.info(f"Deleted existing collection '{COLLECTION_NAME}'")
+
+    qdrant.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=VectorParams(
+            size=VECTOR_DIM,
+            distance=Distance.COSINE,
+        ),
+    )
+    log.info(f"Created collection '{COLLECTION_NAME}' (dim={VECTOR_DIM}, cosine)")
 
     # ─── Upsert in batches ───────────────────────────────────
     total_upserted = 0
@@ -139,7 +147,7 @@ def main() -> None:
         batch_end = min(batch_start + BATCH_SIZE, len(records))
         points = [
             PointStruct(
-                id=hash(ids[i]) % (2**63),  # int64 from string id
+                id=stable_point_id(ids[i]),
                 vector=all_embeddings[i].tolist(),
                 payload={**payloads[i], "use_case_id": ids[i]},
             )

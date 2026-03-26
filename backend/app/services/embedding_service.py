@@ -9,8 +9,8 @@ from app.utils.logger import get_logger
 
 log = get_logger(__name__)
 
-EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B"
-VECTOR_DIM = 1024
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+VECTOR_DIM = 384
 
 # Module-level singleton — set by init_embedding_model()
 _model = None
@@ -33,6 +33,16 @@ def init_embedding_model() -> None:
 def is_model_ready() -> bool:
     """Check if the embedding model has finished loading."""
     return _model is not None
+
+
+async def wait_for_model(timeout: int = 120) -> None:
+    """Wait for the embedding model to finish loading (async, max 120 seconds)."""
+    for _ in range(timeout):
+        if is_model_ready():
+            return
+        await asyncio.sleep(1)
+    from fastapi import HTTPException
+    raise HTTPException(status_code=503, detail="Embedding model failed to load within timeout")
 
 
 def get_model():

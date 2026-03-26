@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
 import ReactECharts from 'echarts-for-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 const fakeItems = [
-  { rank: 1, title: 'AI-Powered Fraud Detection', score: 9.2, color: 'var(--score-high)' },
-  { rank: 2, title: 'Customer Churn Prediction', score: 8.7, color: 'var(--score-high)' },
-  { rank: 3, title: 'Document Processing Automation', score: 8.4, color: 'var(--score-high)' },
-  { rank: 4, title: 'Predictive Maintenance Engine', score: 7.9, color: 'var(--score-mid)' },
-  { rank: 5, title: 'AI Chatbot for Support', score: 7.5, color: 'var(--score-mid)' },
+  { rank: 1, key: 'fraudDetection', score: 9.2, color: 'var(--score-high)' },
+  { rank: 2, key: 'churnPrediction', score: 8.7, color: 'var(--score-high)' },
+  { rank: 3, key: 'docAutomation', score: 8.4, color: 'var(--score-high)' },
+  { rank: 4, key: 'predictiveMaintenance', score: 7.9, color: 'var(--score-mid)' },
+  { rank: 5, key: 'supportChatbot', score: 7.5, color: 'var(--score-mid)' },
 ]
 
 const radarOption = {
@@ -48,6 +49,8 @@ const radarOption = {
 }
 
 export default function DashboardPreview() {
+  const { t } = useTranslation()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -108,7 +111,7 @@ export default function DashboardPreview() {
             fontSize: 14, fontWeight: 700, color: 'var(--text-primary)',
             marginBottom: 4,
           }}>
-            Top 5 AI Opportunities
+            {t('landing.dashboard.top5Title')}
           </div>
           {fakeItems.map(item => (
             <div key={item.rank} style={{
@@ -130,7 +133,7 @@ export default function DashboardPreview() {
                 color: 'var(--text-body)',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
-                {item.title}
+                {t(`landing.dashboard.items.${item.key}`)}
               </span>
               <span style={{
                 fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700,

@@ -20,7 +20,7 @@ from app.models.session import Session
 from app.models.use_case import UseCase
 from app.schemas.scoring import ScoreRequest, ScoreResponse, ScoringResult
 from app.services.cache_service import CacheService
-from app.services.embedding_service import build_query_text
+from app.services.embedding_service import build_query_text, wait_for_model
 from app.services.llm_router import LLMRouter
 from app.services.rag_service import RAGService
 from app.services.scoring_service import ScoringEngine
@@ -42,6 +42,9 @@ async def score_use_cases(
 ):
     """Score and rank Top 10 use cases for a session."""
     start = time.time()
+
+    # 0. Wait for embedding model to load (first request may take 30-60s)
+    await wait_for_model()
 
     # 1. Check cache
     cache_key = f"score:{payload.session_id}"

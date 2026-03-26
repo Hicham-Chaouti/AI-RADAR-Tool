@@ -1,5 +1,6 @@
 import SectionLabel from '../ui/SectionLabel'
 import ChipSelect from '../ui/ChipSelect'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   capabilities: string[]
@@ -7,31 +8,33 @@ interface Props {
 }
 
 const groups = [
-  { label: 'Core AI', items: ['AI', 'ML', 'GenAI', 'Agentic AI'] },
-  { label: 'Specialized', items: ['Computer Vision', 'NLP', 'RPA'] },
-  { label: 'Infrastructure', items: ['Cloud', 'Data', 'IoT', 'Security'] },
-  { label: 'Development', items: ['Dev'] },
+  { key: 'coreAi', items: ['AI', 'ML', 'GenAI', 'Agentic AI'] },
+  { key: 'specialized', items: ['Computer Vision', 'NLP', 'RPA'] },
+  { key: 'infrastructure', items: ['Cloud', 'Data', 'IoT', 'Security'] },
+  { key: 'development', items: ['Dev'] },
 ]
 
 export default function PhaseArsenalStack({ capabilities, onToggle }: Props) {
+  const { t } = useTranslation()
+
   return (
     <div>
-      <SectionLabel number="03" title="ARSENAL & STACK" />
+      <SectionLabel number="03" title={t('onboarding.arsenal.sectionLabel')} />
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: 'var(--text-heading)', marginBottom: 8 }}>
-        AI Capabilities
+        {t('onboarding.arsenal.title')}
       </h3>
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 8 }}>
-        Select the capabilities relevant to the client.
+        {t('onboarding.arsenal.subtitle')}
       </p>
       <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--dxc-blue)', marginBottom: 28 }}>
-        {capabilities.length} capabilities selected
+        {t('onboarding.arsenal.selectedCount', { count: capabilities.length })}
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {groups.map(g => (
-          <div key={g.label}>
+          <div key={g.key}>
             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-              {g.label}
+              {t(`onboarding.arsenal.groups.${g.key}`)}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {g.items.map(item => (

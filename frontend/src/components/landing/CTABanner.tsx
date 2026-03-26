@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 export default function CTABanner() {
+  const { t } = useTranslation()
+
   return (
     <section style={{
       position: 'relative', padding: '100px 40px', textAlign: 'center', overflow: 'hidden',
@@ -27,10 +30,10 @@ export default function CTABanner() {
           fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 3vw, 40px)',
           fontWeight: 800, color: 'var(--text-primary)', marginBottom: 12,
         }}>
-          Ready to discover your AI opportunities?
+          {t('landing.cta.title')}
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: 16, marginBottom: 36, maxWidth: '50ch', margin: '0 auto 36px' }}>
-          Join DXC consultants using AI to win more deals.
+          {t('landing.cta.subtitle')}
         </p>
         <Link to="/onboarding" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -40,10 +43,10 @@ export default function CTABanner() {
           boxShadow: 'var(--shadow-blue)',
           transition: 'all 0.25s',
         }}>
-          Launch Analysis <ArrowRight size={18} />
+          {t('onboarding.launchAnalysis')} <ArrowRight size={18} />
         </Link>
         <p style={{ color: 'var(--text-dim)', fontSize: 13, marginTop: 16 }}>
-          No account required · Results in &lt; 60 seconds
+          {t('landing.cta.footnote')}
         </p>
       </motion.div>
     </section>

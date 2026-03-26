@@ -9,6 +9,14 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url)),
         },
     },
+    build: {
+        minify: 'esbuild',
+        rollupOptions: {
+            output: {
+                manualChunks: undefined,
+            },
+        },
+    },
     server: {
         host: '0.0.0.0',
         port: 5173,
@@ -19,4 +27,5 @@ export default defineConfig({
             },
         },
     },
+    ssr: false,
 })

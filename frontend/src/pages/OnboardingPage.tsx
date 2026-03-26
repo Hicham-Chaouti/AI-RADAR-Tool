@@ -10,12 +10,20 @@ import PhaseClientIntelligence from '../components/onboarding/PhaseClientIntelli
 import PhaseArsenalStack from '../components/onboarding/PhaseArsenalStack'
 import PhaseMissionObjectives from '../components/onboarding/PhaseMissionObjectives'
 import LaunchButton from '../components/onboarding/LaunchButton'
-
-const phaseLabels = ['Configure', 'Client Intel', 'Capabilities', 'Launch']
+import ErrorBanner from '../components/common/ErrorBanner'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function OnboardingPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
-  const { selectedSector, setSession, setTopTen, setLoading, isLoading, loadingMessage, setError } = useSessionStore()
+  const { selectedSector, setSession, setTopTen, setLoading, isLoading, loadingMessage, error, setError } = useSessionStore()
+
+  const phaseLabels = [
+    t('onboarding.progress.configure'),
+    t('onboarding.progress.clientIntel'),
+    t('onboarding.progress.capabilities'),
+    t('onboarding.progress.launch'),
+  ]
 
   const [sector, setSector] = useState(selectedSector || '')
   const [clientName, setClientName] = useState('')
@@ -25,12 +33,37 @@ export default function OnboardingPage() {
   const [objectives, setObjectives] = useState<string[]>([])
   const [notes, setNotes] = useState('')
 
+  // Clear error when user modifies form
+  const clearError = useCallback(() => setError(null), [setError])
+
+  const handleSectorChange = useCallback((s: string) => {
+    clearError()
+    setSector(s)
+  }, [clearError])
+
+  const handleClientNameChange = useCallback((n: string) => {
+    clearError()
+    setClientName(n)
+  }, [clearError])
+
+  const handleRelationshipChange = useCallback((r: string) => {
+    clearError()
+    setRelationship(r)
+  }, [clearError])
+
+  const handleProximityChange = useCallback((p: string) => {
+    clearError()
+    setProximity(p)
+  }, [clearError])
+
   const toggleCap = useCallback((cap: string) => {
+    setError(null)
     setCapabilities(prev => prev.includes(cap) ? prev.filter(c => c !== cap) : [...prev, cap])
-  }, [])
+  }, [setError])
   const toggleObj = useCallback((obj: string) => {
+    setError(null)
     setObjectives(prev => prev.includes(obj) ? prev.filter(o => o !== obj) : [...prev, obj])
-  }, [])
+  }, [setError])
 
   const filled = [sector, clientName, relationship, proximity].filter(Boolean).length + (capabilities.length > 0 ? 1 : 0)
   const total = 5
@@ -40,7 +73,7 @@ export default function OnboardingPage() {
   const handleLaunch = async () => {
     if (!canLaunch) return
     try {
-      setLoading(true, 'Creating session...')
+      setLoading(true, t('onboarding.loading.creatingSession'))
       const session = await createSession({
         sector,
         client_name: clientName,
@@ -50,13 +83,13 @@ export default function OnboardingPage() {
         strategic_objectives: objectives.length > 0 ? objectives : undefined,
       })
       setSession(session)
-      setLoading(true, `Scoring ${sector} use cases...`)
+      setLoading(true, t('onboarding.loading.scoringUseCases', { sector }))
       const result = await scoreSession(session.id)
       setTopTen(result.top_10 as any)
       setLoading(false)
       navigate('/radar')
     } catch (err: any) {
-      setError(err?.message || 'Analysis failed')
+      setError(err?.message || t('onboarding.loading.analysisFailed'))
       setLoading(false)
     }
   }
@@ -103,21 +136,27 @@ export default function OnboardingPage() {
           {/* Header */}
           <motion.div {...sectionAnim} style={{ marginBottom: 40 }}>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-              Mission Briefing
+              {t('onboarding.page.title')}
             </h1>
             <p style={{ fontSize: 16, color: 'var(--text-secondary)' }}>
-              Configure your AI analysis parameters
+              {t('onboarding.page.subtitle')}
             </p>
           </motion.div>
 
           {/* Phases */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 56 }}>
+            {error && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+                <ErrorBanner message={error} />
+              </motion.div>
+            )}
+
             <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
-              <PhaseTargetIdentification sector={sector} clientName={clientName} onSectorChange={setSector} onClientNameChange={setClientName} />
+              <PhaseTargetIdentification sector={sector} clientName={clientName} onSectorChange={handleSectorChange} onClientNameChange={handleClientNameChange} />
             </motion.div>
 
             <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>
-              <PhaseClientIntelligence relationship={relationship} proximity={proximity} onRelationshipChange={setRelationship} onProximityChange={setProximity} />
+              <PhaseClientIntelligence relationship={relationship} proximity={proximity} onRelationshipChange={handleRelationshipChange} onProximityChange={handleProximityChange} />
             </motion.div>
 
             <motion.div {...sectionAnim} className="card" style={{ padding: 32, background: 'var(--bg-white)' }}>

@@ -11,8 +11,10 @@ import UseCaseList from '../components/radar/UseCaseList'
 import QuickPreviewPanel from '../components/radar/QuickPreviewPanel'
 import ScoreBreakdown from '../components/radar/ScoreBreakdown'
 import type { UseCaseScored } from '../types/useCase'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function RadarPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { session, topTen, isLoading } = useSessionStore()
   const { selectedNodeId, setSelectedNode } = useRadarStore()
@@ -56,7 +58,7 @@ export default function RadarPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button onClick={() => navigate('/onboarding')} className="btn btn-ghost" style={{ fontSize: 13 }}>
-              <ArrowLeft size={14} /> New Analysis
+              <ArrowLeft size={14} /> {t('actions.newAnalysis')}
             </button>
             {session && (
               <span style={{
@@ -70,7 +72,7 @@ export default function RadarPage() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={handleExportPdf} disabled={exporting || !session} className="btn btn-primary" style={{ fontSize: 13, padding: '8px 18px' }}>
-              <FileDown size={14} /> {exporting ? 'Exporting...' : 'Export PDF'}
+              <FileDown size={14} /> {exporting ? t('actions.exporting') : t('actions.exportPdf')}
             </button>
             <button disabled className="btn btn-secondary" style={{ fontSize: 13, padding: '8px 18px', opacity: 0.5 }} title="Coming V2">
               <FileText size={14} /> Export PPT
@@ -94,10 +96,10 @@ export default function RadarPage() {
           <div style={{ borderLeft: '1px solid var(--border-light)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: 'var(--text-primary)' }}>
-                Top 10
+                {t('radar.topTen')}
               </span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-dim)' }}>
-                {topTen.length} results
+                {topTen.length} {t('radar.results')}
               </span>
             </div>
 

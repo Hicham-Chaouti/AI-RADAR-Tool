@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Star } from 'lucide-react'
 import DashboardPreview from './DashboardPreview'
+import { useTranslation } from '../../hooks/useTranslation'
 
 const stats = [
   { value: '1,068', label: 'use cases analyzed' },
@@ -11,6 +12,8 @@ const stats = [
 ]
 
 export default function HeroSection() {
+  const { t } = useTranslation()
+
   return (
     <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 40px 80px', overflow: 'hidden' }}>
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 800, textAlign: 'center' }}>
@@ -25,8 +28,8 @@ export default function HeroSection() {
           <div style={{ display: 'flex', gap: 2 }}>
             {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="var(--dxc-blue)" stroke="var(--dxc-blue)" />)}
           </div>
-          <span style={{ fontWeight: 700 }}>5.0 rating</span>
-          <span style={{ color: 'var(--text-secondary)' }}>Trusted by DXC consultants</span>
+          <span style={{ fontWeight: 700 }}>{t('landing.hero.rating')}</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t('landing.hero.trustedBy')}</span>
         </motion.div>
 
         {/* Title */}
@@ -41,8 +44,8 @@ export default function HeroSection() {
             marginBottom: 24, maxWidth: 800,
           }}
         >
-          Turn Client Conversations Into{' '}
-          <span className="gradient-text-animated">AI Roadmaps.</span>
+          {t('landing.hero.titlePrefix')}{' '}
+          <span className="gradient-text-animated">{t('landing.hero.titleAccent')}</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -55,7 +58,7 @@ export default function HeroSection() {
             margin: '0 auto 40px', lineHeight: 1.6,
           }}
         >
-          AI and automation make your consulting process faster, smarter, and ready to outperform.
+          {t('landing.hero.subtitle')}
         </motion.p>
 
         {/* CTAs */}
@@ -73,7 +76,7 @@ export default function HeroSection() {
             boxShadow: 'var(--shadow-blue)',
             transition: 'all 0.25s',
           }}>
-            Start with AI Radar <ArrowRight size={16} />
+            {t('landing.hero.startCta')} <ArrowRight size={16} />
           </Link>
           <Link to="/how-it-works" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -83,7 +86,7 @@ export default function HeroSection() {
             border: '1.5px solid var(--border-light)',
             transition: 'all 0.25s',
           }}>
-            Explore Methodology <ArrowRight size={16} />
+            {t('landing.hero.methodologyCta')} <ArrowRight size={16} />
           </Link>
         </motion.div>
 
@@ -114,7 +117,7 @@ export default function HeroSection() {
                   fontSize: 14, color: 'var(--text-secondary)', marginTop: 4,
                   display: 'block',
                 }}>
-                  {s.label}
+                  {t(`landing.hero.stats.${s.label.replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase()}`, undefined, s.label)}
                 </span>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { ArrowRight, Loader2 } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   canLaunch: boolean
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function LaunchButton({ canLaunch, isLoading, loadingMessage, sector, onLaunch }: Props) {
+  const { t } = useTranslation()
   return (
     <div style={{
       position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 50,
@@ -37,11 +39,11 @@ export default function LaunchButton({ canLaunch, isLoading, loadingMessage, sec
         {isLoading ? (
           <>
             <Loader2 size={18} className="animate-spin" />
-            {loadingMessage || `Analyzing use cases across ${sector}...`}
+            {loadingMessage || t('onboarding.analyzingSector', { sector })}
           </>
         ) : (
           <>
-            Launch Analysis <ArrowRight size={18} />
+            {t('onboarding.launchAnalysis')} <ArrowRight size={18} />
           </>
         )}
       </button>

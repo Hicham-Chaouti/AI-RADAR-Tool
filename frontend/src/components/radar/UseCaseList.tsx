@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import type { UseCaseScored } from '../../types/useCase'
 import { Zap } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   items: UseCaseScored[]
@@ -32,6 +33,8 @@ const container = { hidden: {}, visible: { transition: { staggerChildren: 0.05 }
 const item = { hidden: { opacity: 0, x: 20 }, visible: { opacity: 1, x: 0, transition: { duration: 0.35 } } }
 
 export default function UseCaseList({ items, selectedId, onSelect, isLoading }: Props) {
+  const { t } = useTranslation()
+
   if (isLoading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -83,7 +86,7 @@ export default function UseCaseList({ items, selectedId, onSelect, isLoading }: 
                 {uc.title}
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2 }}>
-                {uc.company_example || uc.archetype || '—'}
+                {uc.archetype || '—'}
               </div>
             </div>
 
@@ -95,7 +98,7 @@ export default function UseCaseList({ items, selectedId, onSelect, isLoading }: 
                 background: 'var(--accent-emerald-light)', padding: '3px 8px',
                 borderRadius: 'var(--radius-full)', flexShrink: 0,
               }}>
-                <Zap size={10} /> Quick Win
+                <Zap size={10} /> {t('radar.quickWin')}
               </span>
             )}
 

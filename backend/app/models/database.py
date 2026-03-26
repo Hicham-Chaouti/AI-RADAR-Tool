@@ -16,6 +16,11 @@ class Base(DeclarativeBase):
     pass
 
 
+# Import models so they register with Base.metadata
+from app.models.session import Session  # noqa: E402, F401
+from app.models.use_case import UseCase  # noqa: E402, F401
+
+
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """FastAPI dependency that yields an async DB session."""
     async with async_session_factory() as session:

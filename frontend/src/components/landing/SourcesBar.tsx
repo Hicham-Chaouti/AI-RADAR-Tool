@@ -1,17 +1,19 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 const sources = [
-  { name: 'Google Cloud', logo: '/logos/google-cloud.png', count: '933 use cases', active: true, badge: null, isBlueprint: false, logoHeight: 80 },
-  { name: 'IBM watsonx', logo: '/logos/ibm-watsonx.png?v=2', count: '47 use cases', active: true, badge: null, isBlueprint: false, logoHeight: 120 },
-  { name: 'Salesforce AI', logo: '/logos/salesforce.png', count: '57 use cases', active: true, badge: null, isBlueprint: false, logoHeight: 140 },
-  { name: 'Google Cloud', logo: '/logos/google-cloud.png', count: '31 use cases', active: true, badge: null, isBlueprint: true, logoHeight: 80 },
-  { name: 'McKinsey', logo: '/logos/mckinsey.png', count: 'Benchmark Ref.', active: true, badge: 'Calibration Only', isBlueprint: false, logoHeight: 170 },
-  { name: 'NVIDIA', logo: '/logos/nvidia.png', count: 'Coming V2', active: false, badge: 'Coming V2', isBlueprint: false, logoHeight: 80 },
-  { name: 'MIT', logo: '/logos/mit.png', count: 'Coming V2', active: false, badge: 'Coming V2', isBlueprint: false, logoHeight: 60 },
+  { name: 'Google Cloud', logo: '/logos/google-cloud.png', countKey: 'googleCloud', active: true, badgeKey: null, isBlueprint: false, logoHeight: 80 },
+  { name: 'IBM watsonx', logo: '/logos/ibm-watsonx.png?v=2', countKey: 'ibm', active: true, badgeKey: null, isBlueprint: false, logoHeight: 120 },
+  { name: 'Salesforce AI', logo: '/logos/salesforce.png', countKey: 'salesforce', active: true, badgeKey: null, isBlueprint: false, logoHeight: 140 },
+  { name: 'Google Cloud', logo: '/logos/google-cloud.png', countKey: 'blueprints', active: true, badgeKey: null, isBlueprint: true, logoHeight: 80 },
+  { name: 'McKinsey', logo: '/logos/mckinsey.png', countKey: 'benchmark', active: true, badgeKey: 'calibrationOnly', isBlueprint: false, logoHeight: 170 },
+  { name: 'NVIDIA', logo: '/logos/nvidia.png', countKey: 'comingV2', active: false, badgeKey: 'comingV2', isBlueprint: false, logoHeight: 80 },
+  { name: 'MIT', logo: '/logos/mit.png', countKey: 'comingV2', active: false, badgeKey: 'comingV2', isBlueprint: false, logoHeight: 60 },
 ]
 
 function SourceItem({ s }: { s: typeof sources[0] }) {
+  const { t } = useTranslation()
   const [imgError, setImgError] = useState(false)
 
   return (
@@ -46,7 +48,7 @@ function SourceItem({ s }: { s: typeof sources[0] }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
               width: 6, height: 6, borderRadius: '50%',
-              background: s.badge === 'Calibration Only' ? 'var(--dxc-orange)' : s.active ? 'var(--dxc-blue)' : 'var(--text-dim)',
+              background: s.badgeKey === 'calibrationOnly' ? 'var(--dxc-orange)' : s.active ? 'var(--dxc-blue)' : 'var(--text-dim)',
             }} />
             <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-primary)' }}>
               {s.name}
@@ -57,7 +59,7 @@ function SourceItem({ s }: { s: typeof sources[0] }) {
       {s.isBlueprint && (
         <>
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
-            Google Cloud
+            {t('landing.sources.blueprintProvider')}
           </span>
           <span style={{
             fontSize: 10, fontWeight: 600,
@@ -66,27 +68,29 @@ function SourceItem({ s }: { s: typeof sources[0] }) {
             color: 'var(--dxc-blue)',
             marginTop: 4,
           }}>
-            Blueprints
+            {t('landing.sources.blueprints')}
           </span>
         </>
       )}
-      <span style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 8, opacity: s.active ? 1 : 0.4 }}>{s.count}</span>
-      {s.badge && (
+      <span style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 8, opacity: s.active ? 1 : 0.4 }}>{t(`landing.sources.counts.${s.countKey}`)}</span>
+      {s.badgeKey && (
         <span style={{
           fontSize: 10, fontWeight: 600,
           padding: '2px 8px', borderRadius: 100,
-          background: s.badge === 'Coming V2' ? 'var(--bg-muted)' : 'var(--dxc-orange-light)',
-          color: s.badge === 'Coming V2' ? 'var(--text-dim)' : 'var(--dxc-orange)',
+          background: s.badgeKey === 'comingV2' ? 'var(--bg-muted)' : 'var(--dxc-orange-light)',
+          color: s.badgeKey === 'comingV2' ? 'var(--text-dim)' : 'var(--dxc-orange)',
           marginTop: 4,
           opacity: s.active ? 1 : 0.5,
         }}>
-          {s.badge}
+          {t(`landing.sources.badges.${s.badgeKey}`)}
         </span>
       )}
     </div>
   )
 }
 export default function SourcesBar() {
+  const { t } = useTranslation()
+
   return (
     <section style={{ padding: '48px 40px', position: 'relative' }}>
       <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
@@ -94,7 +98,7 @@ export default function SourcesBar() {
           fontSize: 13, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
           color: 'var(--text-dim)', marginBottom: 28,
         }}>
-          Knowledge Base sourced from
+          {t('landing.sources.title')}
         </p>
 
         <motion.div

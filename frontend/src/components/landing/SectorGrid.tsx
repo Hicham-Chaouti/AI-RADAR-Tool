@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSessionStore } from '../../store/sessionStore'
 import { INDUSTRIES } from '../../utils/constants'
 import { Landmark, HeartPulse, ShoppingCart, Zap, Factory, Car, Building2, Shield, GraduationCap, Cog, Truck, Tv, Plane } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 const sectorIcons: Record<string, typeof Landmark> = {
   'Banking & Financial Services': Landmark,
@@ -43,6 +44,7 @@ const container = { hidden: {}, visible: { transition: { staggerChildren: 0.06 }
 const item = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
 
 export default function SectorGrid() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const setSelectedSector = useSessionStore(s => s.setSelectedSector)
 
@@ -55,13 +57,13 @@ export default function SectorGrid() {
     <section style={{ position: 'relative', padding: '100px 40px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <div className="pill-badge" style={{ marginBottom: 20 }}>
-          Coverage
+          {t('landing.sectors.badge')}
         </div>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-          13 Industry Sectors
+          {t('landing.sectors.title')}
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: 16, marginBottom: 48 }}>
-          Click any sector to start your analysis
+          {t('landing.sectors.subtitle')}
         </p>
 
         {/* Top 5 — larger cards */}
@@ -97,7 +99,7 @@ export default function SectorGrid() {
                   {sector}
                 </div>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--text-dim)' }}>
-                  {topCounts[sector]} use cases
+                  {t('landing.sectors.useCasesCount', { count: topCounts[sector] })}
                 </span>
               </motion.button>
             )

@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import SectionLabel from '../ui/SectionLabel'
 import { Handshake, Building2, Signal, SignalLow, SignalMedium } from 'lucide-react'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface Props {
   relationship: string
@@ -11,25 +12,27 @@ interface Props {
 }
 
 export default function PhaseClientIntelligence({ relationship, proximity, onRelationshipChange, onProximityChange }: Props) {
+  const { t } = useTranslation()
+
   return (
     <div>
-      <SectionLabel number="02" title="CLIENT INTELLIGENCE" />
+      <SectionLabel number="02" title={t('onboarding.clientIntel.sectionLabel')} />
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-        Relationship Context
+        {t('onboarding.clientIntel.title')}
       </h3>
       <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 32 }}>
-        Help us understand the client relationship for better scoring.
+        {t('onboarding.clientIntel.subtitle')}
       </p>
 
       {/* Relationship level */}
       <div style={{ marginBottom: 32 }}>
         <label style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12, display: 'block' }}>
-          Relationship Level
+          {t('onboarding.clientIntel.relationshipLevelLabel')}
         </label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {[
-            { value: 'new', label: 'New Client', desc: 'First engagement — discovery mode', icon: Handshake },
-            { value: 'existing', label: 'Existing Client', desc: 'Ongoing partnership — deep context', icon: Building2 },
+            { value: 'new', label: t('onboarding.clientIntel.relationship.new.label'), desc: t('onboarding.clientIntel.relationship.new.desc'), icon: Handshake },
+            { value: 'existing', label: t('onboarding.clientIntel.relationship.existing.label'), desc: t('onboarding.clientIntel.relationship.existing.desc'), icon: Building2 },
           ].map(opt => {
             const isSelected = relationship === opt.value
             return (
@@ -74,13 +77,13 @@ export default function PhaseClientIntelligence({ relationship, proximity, onRel
       {/* Business Proximity */}
       <div>
         <label style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12, display: 'block' }}>
-          Business Proximity
+          {t('onboarding.clientIntel.businessProximityLabel')}
         </label>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {[
-            { value: 'low', label: 'Low', desc: 'Limited interaction', icon: SignalLow, color: 'var(--score-low)' },
-            { value: 'medium', label: 'Medium', desc: 'Regular business', icon: SignalMedium, color: 'var(--score-mid)' },
-            { value: 'high', label: 'High', desc: 'Strategic partner', icon: Signal, color: 'var(--score-high)' },
+            { value: 'low', label: t('onboarding.clientIntel.proximity.low.label'), desc: t('onboarding.clientIntel.proximity.low.desc'), icon: SignalLow, color: 'var(--score-low)' },
+            { value: 'medium', label: t('onboarding.clientIntel.proximity.medium.label'), desc: t('onboarding.clientIntel.proximity.medium.desc'), icon: SignalMedium, color: 'var(--score-mid)' },
+            { value: 'high', label: t('onboarding.clientIntel.proximity.high.label'), desc: t('onboarding.clientIntel.proximity.high.desc'), icon: Signal, color: 'var(--score-high)' },
           ].map(opt => {
             const isSelected = proximity === opt.value
             return (

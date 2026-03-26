@@ -4,13 +4,15 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSessionStore } from '../store/sessionStore'
 import { getUseCase } from '../api/usecases'
 import { exportPdf } from '../api/export'
-import { ArrowLeft, FileDown, ExternalLink, Tag, Zap, Building2, Globe, Sparkles } from 'lucide-react'
+import { ArrowLeft, FileDown, ExternalLink, Tag, Zap, Globe, Sparkles } from 'lucide-react'
 import type { UseCase } from '../types/useCase'
 
 import Navbar from '../components/layout/Navbar'
 import ScoreBadge from '../components/ui/ScoreBadge'
 import ScoreBar from '../components/ui/ScoreBar'
 import ReactECharts from 'echarts-for-react'
+import { useTranslation } from '../hooks/useTranslation'
+import { useLocalizedDynamicText } from '../hooks/useLocalizedDynamicText'
 
 function parseMarkdownBold(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g)
@@ -23,6 +25,7 @@ function parseMarkdownBold(text: string) {
 }
 
 export default function UseCasePage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { session, topTen } = useSessionStore()
@@ -32,6 +35,10 @@ export default function UseCasePage() {
   const scored = useMemo(() =>
     topTen.find(uc => (uc.use_case_id || uc.id) === id) || null
   , [topTen, id])
+
+  const { text: translatedDescription } = useLocalizedDynamicText(detail?.description)
+  const { text: translatedAiSolution } = useLocalizedDynamicText(detail?.ai_solution)
+  const { text: translatedJustification } = useLocalizedDynamicText(scored?.justification)
 
   useEffect(() => {
     if (id) getUseCase(id).then(setDetail).catch(console.error)
@@ -86,10 +93,10 @@ export default function UseCasePage() {
           borderBottom: '1px solid var(--border-light)', background: 'var(--bg-white)',
         }}>
           <button onClick={() => navigate('/radar')} className="btn btn-ghost" style={{ fontSize: 13 }}>
-            <ArrowLeft size={14} /> Back to Results
+            <ArrowLeft size={14} /> {t('radar.backToResults')}
           </button>
           <button onClick={handleExport} disabled={exporting} className="btn btn-primary" style={{ fontSize: 13, padding: '8px 18px' }}>
-            <FileDown size={14} /> {exporting ? 'Exporting...' : 'Export PDF'}
+            <FileDown size={14} /> {exporting ? t('actions.exporting') : t('actions.exportPdf')}
           </button>
         </div>
 
@@ -108,7 +115,7 @@ export default function UseCasePage() {
                     color: 'white',
                     padding: '4px 12px', borderRadius: 'var(--radius-full)',
                   }}>
-                    Rank #{scored.rank}
+                    {t('radar.rank', { rank: scored.rank })}
                   </span>
                 </div>
               )}
@@ -130,24 +137,21 @@ export default function UseCasePage() {
 
             {/* Metadata */}
             <div className="card" style={{ padding: 20, background: 'var(--bg-white)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {scored?.company_example && (
-                <MetaRow icon={<Building2 size={14} />} label="Company" value={scored.company_example} />
-              )}
               {(detail?.source_url || scored?.source_url) && (
-                <MetaRow icon={<Globe size={14} />} label="Source"
+                <MetaRow icon={<Globe size={14} />} label={t('radar.source')}
                   value={<a href={detail?.source_url || scored?.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dxc-blue)', fontSize: 13 }}>
-                    {detail?.source_name || scored?.source_name || 'View'} <ExternalLink size={10} style={{ display: 'inline' }} />
+                    {detail?.source_name || scored?.source_name || t('common.viewSource')} <ExternalLink size={10} style={{ display: 'inline' }} />
                   </a>}
                 />
               )}
               {scored?.archetype && (
-                <MetaRow icon={<Tag size={14} />} label="Archetype"
+                <MetaRow icon={<Tag size={14} />} label={t('radar.archetype')}
                   value={<span className="chip chip--active" style={{ fontSize: 11, padding: '2px 8px' }}>{scored.archetype}</span>}
                 />
               )}
               {scored?.quick_win && (
-                <MetaRow icon={<Zap size={14} />} label="Quick Win"
-                  value={<span style={{ color: 'var(--accent-emerald)', fontWeight: 600, fontSize: 13 }}>Yes — fast implementation</span>}
+                <MetaRow icon={<Zap size={14} />} label={t('radar.quickWin')}
+                  value={<span style={{ color: 'var(--accent-emerald)', fontWeight: 600, fontSize: 13 }}>{t('common.yesFastImplementation')}</span>}
                 />
               )}
             </div>
@@ -158,40 +162,30 @@ export default function UseCasePage() {
             {/* Title */}
             <div>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 8 }}>
-                {detail?.title || scored?.title || 'Loading...'}
+                {detail?.title || scored?.title || t('common.loading')}
               </h1>
-              {scored?.company_example && (
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: 'var(--bg-muted)', border: '1px solid var(--border-light)',
-                  padding: '4px 12px', borderRadius: 'var(--radius-full)',
-                  fontSize: 12, color: 'var(--text-secondary)',
-                }}>
-                  <Building2 size={12} /> {scored.company_example}
-                </span>
-              )}
             </div>
 
             {/* Description */}
-            {detail?.description && (
+            {translatedDescription && (
               <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  Description
+                  {t('radar.description')}
                 </h3>
                 <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  {detail.description}
+                  {translatedDescription}
                 </p>
               </div>
             )}
 
             {/* AI Solution */}
-            {detail?.ai_solution && (
+            {translatedAiSolution && (
               <div style={{ padding: 24, background: 'var(--bg-soft)', borderRadius: 12 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  AI Solution
+                  {t('radar.aiSolution')}
                 </h3>
                 <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  {detail.ai_solution}
+                  {translatedAiSolution}
                 </p>
               </div>
             )}
@@ -200,7 +194,7 @@ export default function UseCasePage() {
             {detail?.measurable_benefit && (
               <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  Benefits
+                  {t('radar.benefits')}
                 </h3>
                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {detail.measurable_benefit.split(/[;,\n]/).filter(Boolean).map((b, i) => (
@@ -214,7 +208,7 @@ export default function UseCasePage() {
             )}
 
             {/* Justification — highlighted */}
-            {scored?.justification && (
+            {translatedJustification && (
               <div style={{
                 padding: 24, background: 'var(--dxc-orange-light)',
                 borderRadius: 12,
@@ -223,18 +217,18 @@ export default function UseCasePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
                   <Sparkles size={14} style={{ color: 'var(--dxc-orange)' }} />
                   <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--dxc-orange)' }}>
-                    AI-Generated Justification
+                    {t('radar.generatedJustification')}
                   </span>
                 </div>
                 <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8, fontStyle: 'italic' }}>
-                  {parseMarkdownBold(scored.justification)}
+                  {parseMarkdownBold(translatedJustification)}
                 </p>
                 <div style={{
                   marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6,
                   background: 'var(--bg-white)', padding: '4px 12px', borderRadius: 'var(--radius-full)',
                   fontSize: 11, color: 'var(--text-dim)',
                 }}>
-                  Powered by Mistral Small · Contextualised for {session?.client_name || 'client'}
+                  {t('radar.poweredBy', { client: session?.client_name || 'client' })}
                 </div>
               </div>
             )}
@@ -243,7 +237,7 @@ export default function UseCasePage() {
             {detail?.tech_keywords && detail.tech_keywords.length > 0 && (
               <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  Data Prerequisites
+                  {t('radar.dataPrerequisites')}
                 </h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {detail.tech_keywords.map(kw => (
