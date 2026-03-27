@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import re
 import time
 
 from mistralai.client import Mistral
@@ -86,6 +88,71 @@ class LLMRouter:
         await self._cache.set(cache_key, {"text": text}, ttl=3600)
         return text
 
+    async def generate_roadmap(
+        self,
+        use_case: UseCase,
+        sector: str,
+    ) -> dict:
+        """Generate a structured implementation roadmap. Cached per use_case + sector (24h)."""
+        from app.prompts.roadmap import ROADMAP_PROMPT
+
+        cache_key = f"roadmap:v3:{use_case.id}:{sector}"
+        cached = await self._cache.get(cache_key)
+        if isinstance(cached, dict) and cached.get("roadmap"):
+            log.info(
+                "Roadmap cache hit",
+                extra={"use_case_id": use_case.id, "cache_hit": True, "task": "roadmap"},
+            )
+            return cached
+
+        if not self._client:
+            return _empty_roadmap(use_case.title)
+
+        prompt = ROADMAP_PROMPT.format(
+            title=use_case.title,
+            sector=sector,
+            description=use_case.description or "",
+            ai_solution=use_case.ai_solution or "",
+            business_challenge=use_case.business_challenge or "",
+            measurable_benefit=use_case.measurable_benefit or "",
+        )
+
+        start = time.time()
+        try:
+            response = await asyncio.to_thread(
+                self._client.chat.complete,
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+            )
+            latency = int((time.time() - start) * 1000)
+            raw = (response.choices[0].message.content or "").strip()
+            tokens = getattr(response.usage, "total_tokens", 0)
+
+            # Strip markdown fences if the model wrapped the JSON
+            raw = re.sub(r"^```[a-z]*\n?", "", raw)
+            raw = re.sub(r"\n?```$", "", raw).strip()
+
+            data = json.loads(raw)
+
+            log.info(
+                "Roadmap generated",
+                extra={
+                    "use_case_id": use_case.id,
+                    "model": LLM_MODEL,
+                    "task": "roadmap",
+                    "tokens": tokens,
+                    "cache_hit": False,
+                    "latency_ms": latency,
+                },
+            )
+
+            await self._cache.set(cache_key, data, ttl=86400)  # 24h
+            return data
+        except Exception as exc:
+            log.warning("Roadmap generation failed", extra={"use_case_id": use_case.id, "error": str(exc)})
+            return _empty_roadmap(use_case.title)
+
     async def generate_report_summary(
         self,
         session: Session,
@@ -140,3 +207,14 @@ class LLMRouter:
 
         await self._cache.set(cache_key, {"text": text}, ttl=3600)
         return text
+
+
+def _empty_roadmap(title: str) -> dict:
+    return {
+        "use_case_title": title,
+        "objective": "Roadmap unavailable — LLM service not configured.",
+        "business_value": [],
+        "roadmap": [],
+        "estimated_timeline": "N/A",
+        "risks_and_mitigations": [],
+    }

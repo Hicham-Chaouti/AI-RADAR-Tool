@@ -10,9 +10,11 @@ import type { UseCase } from '../types/useCase'
 import Navbar from '../components/layout/Navbar'
 import ScoreBadge from '../components/ui/ScoreBadge'
 import ScoreBar from '../components/ui/ScoreBar'
+import RoadmapSection from '../components/radar/RoadmapSection'
 import ReactECharts from 'echarts-for-react'
 import { useTranslation } from '../hooks/useTranslation'
 import { useLocalizedDynamicText } from '../hooks/useLocalizedDynamicText'
+import { useLocalizedDynamicFields } from '../hooks/useLocalizedDynamicFields'
 
 function parseMarkdownBold(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g)
@@ -39,6 +41,10 @@ export default function UseCasePage() {
   const { text: translatedDescription } = useLocalizedDynamicText(detail?.description)
   const { text: translatedAiSolution } = useLocalizedDynamicText(detail?.ai_solution)
   const { text: translatedJustification } = useLocalizedDynamicText(scored?.justification)
+  const localized = useLocalizedDynamicFields({
+    title: detail?.title || scored?.title,
+    measurableBenefit: detail?.measurable_benefit,
+  })
 
   useEffect(() => {
     if (id) getUseCase(id).then(setDetail).catch(console.error)
@@ -63,8 +69,11 @@ export default function UseCasePage() {
     return {
       radar: {
         indicator: [
-          { name: 'ROI', max: 10 }, { name: 'Tech', max: 10 },
-          { name: 'Market', max: 10 }, { name: 'Risk', max: 10 }, { name: 'Quick Win', max: 10 },
+          { name: t('radar.axes.roi', undefined, 'ROI'), max: 10 },
+          { name: t('radar.axes.tech', undefined, 'Tech'), max: 10 },
+          { name: t('radar.axes.market', undefined, 'Market'), max: 10 },
+          { name: t('radar.axes.risk', undefined, 'Risk'), max: 10 },
+          { name: t('radar.axes.quickWin', undefined, 'Quick Win'), max: 10 },
         ],
         shape: 'circle', splitNumber: 4,
         axisName: { color: '#6b7280', fontSize: 11, fontWeight: 600 },
@@ -74,13 +83,13 @@ export default function UseCasePage() {
       },
       series: [{ type: 'radar', data: [{ value: values, lineStyle: { color: '#5a8de8', width: 2.5 }, areaStyle: { color: 'rgba(90,141,232,0.2)' }, itemStyle: { color: '#fff', borderColor: '#5a8de8', borderWidth: 2.5 } }], animationDuration: 1200 }],
     }
-  }, [scored])
+  }, [scored, t])
 
   const bars = [
-    { key: 'trend_strength' as const, label: 'Trend Strength', color: 'var(--dxc-blue)' },
-    { key: 'client_relevance' as const, label: 'Client Relevance', color: 'var(--dxc-orange)' },
-    { key: 'capability_match' as const, label: 'Capability Match', color: 'var(--accent-emerald)' },
-    { key: 'market_momentum' as const, label: 'Market Momentum', color: 'var(--accent-purple)' },
+    { key: 'trend_strength' as const, label: t('radar.criteria.trendStrength', undefined, 'Trend Strength'), color: 'var(--dxc-blue)' },
+    { key: 'client_relevance' as const, label: t('radar.criteria.clientRelevance', undefined, 'Client Relevance'), color: 'var(--dxc-orange)' },
+    { key: 'capability_match' as const, label: t('radar.criteria.capabilityMatch', undefined, 'Capability Match'), color: 'var(--accent-emerald)' },
+    { key: 'market_momentum' as const, label: t('radar.criteria.marketMomentum', undefined, 'Market Momentum'), color: 'var(--accent-purple)' },
   ]
 
   return (
@@ -162,7 +171,7 @@ export default function UseCasePage() {
             {/* Title */}
             <div>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 8 }}>
-                {detail?.title || scored?.title || t('common.loading')}
+                {localized.title || t('common.loading')}
               </h1>
             </div>
 
@@ -191,13 +200,13 @@ export default function UseCasePage() {
             )}
 
             {/* Benefits */}
-            {detail?.measurable_benefit && (
+            {localized.measurableBenefit && (
               <div className="card" style={{ padding: 24, background: 'var(--bg-white)' }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {t('radar.benefits')}
                 </h3>
                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {detail.measurable_benefit.split(/[;,\n]/).filter(Boolean).map((b, i) => (
+                  {localized.measurableBenefit.split(/[;,\n]/).filter(Boolean).map((b, i) => (
                     <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'var(--text-secondary)' }}>
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--dxc-orange)', marginTop: 7, flexShrink: 0 }} />
                       {b.trim()}
@@ -249,6 +258,11 @@ export default function UseCasePage() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* Implementation Roadmap */}
+            {id && (
+              <RoadmapSection useCaseId={id} sessionId={session?.id} />
             )}
           </div>
         </div>

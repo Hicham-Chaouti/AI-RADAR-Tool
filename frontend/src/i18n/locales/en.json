@@ -41,7 +41,42 @@
     "benefits": "Benefits",
     "dataPrerequisites": "Data Prerequisites",
     "generatedJustification": "AI-Generated Justification",
-    "poweredBy": "Powered by Mistral Small - Contextualised for {{client}}"
+    "poweredBy": "Powered by Mistral Small - Contextualised for {{client}}",
+    "criteria": {
+      "trendStrength": "Trend Strength",
+      "clientRelevance": "Client Relevance",
+      "capabilityMatch": "Capability Match",
+      "marketMomentum": "Market Momentum"
+    },
+    "axes": {
+      "roi": "ROI",
+      "tech": "Tech",
+      "market": "Market",
+      "risk": "Risk",
+      "quickWin": "Quick Win"
+    },
+    "roadmap": {
+      "title": "Implementation Roadmap",
+      "subtitle": "AI-generated consulting-grade delivery plan",
+      "generate": "Generate Roadmap",
+      "generating": "Generating your consulting roadmap...",
+      "idleHint": "Generate a step-by-step delivery roadmap with effort estimates, required profiles, and deliverables for each phase.",
+      "businessValue": "Business Value",
+      "budgetTotal": "Total Budget",
+      "dailyRate": "at €850/day blended rate",
+      "totalCharge": "Total Effort",
+      "equipeRecommandee": "Recommended Team",
+      "phases": "Delivery Phases",
+      "profils": "Profiles",
+      "keyActions": "Key Actions",
+      "livrables": "Deliverables",
+      "timeline": "Estimated Timeline",
+      "risksAndMitigations": "Risks & Mitigations",
+      "risk": "Risk",
+      "mitigation": "Mitigation",
+      "error": "Failed to generate roadmap. Please try again.",
+      "retry": "Retry"
+    }
   },
   "onboarding": {
     "launchAnalysis": "Launch Analysis",

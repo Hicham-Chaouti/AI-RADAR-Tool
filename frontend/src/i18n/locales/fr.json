@@ -41,7 +41,42 @@
     "benefits": "Benefices",
     "dataPrerequisites": "Prerequis de donnees",
     "generatedJustification": "Justification generee par IA",
-    "poweredBy": "Propulse par Mistral Small - contextualise pour {{client}}"
+    "poweredBy": "Propulse par Mistral Small - contextualise pour {{client}}",
+    "criteria": {
+      "trendStrength": "Force de tendance",
+      "clientRelevance": "Pertinence client",
+      "capabilityMatch": "Adequation capacites",
+      "marketMomentum": "Momentum marche"
+    },
+    "axes": {
+      "roi": "ROI",
+      "tech": "Tech",
+      "market": "Marche",
+      "risk": "Risque",
+      "quickWin": "Gain rapide"
+    },
+    "roadmap": {
+      "title": "Feuille de route",
+      "subtitle": "Plan de delivery consulting genere par IA",
+      "generate": "Generer la feuille de route",
+      "generating": "Generation du plan consulting en cours...",
+      "idleHint": "Generez un plan de delivery detaille avec estimations de charge, profils requis et livrables par phase.",
+      "businessValue": "Valeur metier",
+      "budgetTotal": "Budget total",
+      "dailyRate": "à 850€/jour taux mixte",
+      "totalCharge": "Charge totale",
+      "equipeRecommandee": "Equipe recommandee",
+      "phases": "Phases de delivery",
+      "profils": "Profils",
+      "keyActions": "Actions cles",
+      "livrables": "Livrables",
+      "timeline": "Calendrier estime",
+      "risksAndMitigations": "Risques & Mitigations",
+      "risk": "Risque",
+      "mitigation": "Mitigation",
+      "error": "Echec de la generation. Veuillez reessayer.",
+      "retry": "Reessayer"
+    }
   },
   "onboarding": {
     "launchAnalysis": "Lancer l'analyse",
