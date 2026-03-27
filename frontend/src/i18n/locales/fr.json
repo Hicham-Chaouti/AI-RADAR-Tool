@@ -277,7 +277,8 @@
       "badge": "Couverture",
       "title": "13 secteurs d'activite",
       "subtitle": "Cliquez sur un secteur pour lancer l'analyse",
-      "useCasesCount": "{{count}} cas d'usage"
+      "useCasesCount": "{{count}} cas d'usage",
+      "useCasesLabel": "cas d'usage"
     },
     "cta": {
       "title": "Pret a decouvrir vos opportunites IA ?",

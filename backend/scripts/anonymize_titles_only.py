@@ -1,7 +1,16 @@
-"""Anonymize commercial/brand names across use case text fields."""
+"""Anonymize commercial/brand names across use case text fields.
 
+Run modes:
+  python anonymize_titles_only.py          # regex-only (fast, offline)
+  python anonymize_titles_only.py --llm    # regex + LLM pass (slower, catches custom product names)
+"""
+
+import argparse
 import json
+import os
 import re
+import sys
+import time
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -237,5 +246,69 @@ def main():
     print(f"\n" + "="*100)
     print(f"Output file: {OUTPUT_FILE}")
 
+def llm_anonymize(title: str, description: str, client, model: str) -> dict:
+    """Call Mistral to catch custom product/solution names the regex list misses."""
+    from app.prompts.anonymize_use_case import ANONYMIZE_PROMPT
+
+    prompt = ANONYMIZE_PROMPT.format(title=title, description=description or "")
+    try:
+        response = client.chat.complete(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1,
+        )
+        raw = (response.choices[0].message.content or "").strip()
+        raw = re.sub(r"^```[a-z]*\n?", "", raw)
+        raw = re.sub(r"\n?```$", "", raw).strip()
+        return json.loads(raw)
+    except Exception as exc:
+        print(f"  ⚠️  LLM call failed: {exc}", file=sys.stderr)
+        return {"title": title, "description": description}
+
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Anonymize use case text fields.")
+    parser.add_argument("--llm", action="store_true", help="Run a second LLM pass to catch custom product names")
+    args = parser.parse_args()
+
+    # Lazy-load Mistral only when --llm flag is set
+    llm_client = None
+    llm_model = "mistral-small-latest"
+    if args.llm:
+        api_key = os.environ.get("MISTRAL_API_KEY")
+        if not api_key:
+            print("❌ --llm requires MISTRAL_API_KEY env var to be set.", file=sys.stderr)
+            sys.exit(1)
+        # Add backend app to path so app.prompts is importable
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from mistralai.client import Mistral
+        llm_client = Mistral(api_key=api_key)
+        print(f"🤖 LLM pass enabled ({llm_model})")
+
     main()
+
+    # Optional LLM pass — runs over the already-regex-anonymized output
+    if args.llm and llm_client:
+        print(f"\n🤖 Running LLM anonymization pass...")
+        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+            use_cases = json.load(f)
+
+        llm_changes = 0
+        for i, uc in enumerate(use_cases):
+            original_title = uc.get("title", "")
+            original_desc = uc.get("description", "")
+
+            result = llm_anonymize(original_title, original_desc, llm_client, llm_model)
+
+            if result["title"] != original_title or result["description"] != original_desc:
+                uc["title"] = result["title"]
+                uc["description"] = result["description"]
+                llm_changes += 1
+                print(f"  [{i+1}] ✅ {original_title[:60]} → {result['title'][:60]}")
+
+            time.sleep(0.3)  # respect rate limits
+
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(use_cases, f, indent=2, ensure_ascii=False)
+
+        print(f"\n✅ LLM pass complete — {llm_changes} additional use cases refined.")

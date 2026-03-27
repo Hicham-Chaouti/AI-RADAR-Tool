@@ -1,4 +1,4 @@
-"""Use case detail endpoints — GET /api/v1/usecases/{id}, POST /api/v1/usecases/{id}/roadmap."""
+"""Use case detail endpoints."""
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_cache_service, get_db, get_llm_router
 from app.models.session import Session
 from app.models.use_case import UseCase
+from app.schemas.anonymize import AnonymizeResponse
 from app.schemas.roadmap import RoadmapRequest, RoadmapResponse
 from app.schemas.use_case import UseCaseRead
 from app.services.cache_service import CacheService
@@ -28,6 +29,26 @@ async def get_use_case(
     return uc
 
 
+@router.post("/{use_case_id}/anonymize", response_model=AnonymizeResponse)
+async def anonymize_use_case(
+    use_case_id: str,
+    db: AsyncSession = Depends(get_db),
+    cache: CacheService = Depends(get_cache_service),
+    llm: LLMRouter = Depends(get_llm_router),
+):
+    """LLM-based anonymization of custom product/solution names in a use case."""
+    result = await db.execute(select(UseCase).where(UseCase.id == use_case_id))
+    uc = result.scalar_one_or_none()
+    if not uc:
+        raise HTTPException(status_code=404, detail=f"Use case '{use_case_id}' not found")
+
+    data = await llm.anonymize_use_case(
+        title=uc.title or "",
+        description=uc.description or "",
+    )
+    return AnonymizeResponse(**data)
+
+
 @router.post("/{use_case_id}/roadmap", response_model=RoadmapResponse)
 async def generate_roadmap(
     use_case_id: str,
@@ -42,7 +63,6 @@ async def generate_roadmap(
     if not uc:
         raise HTTPException(status_code=404, detail=f"Use case '{use_case_id}' not found")
 
-    # Use sector from session if available, else fall back to use case sector
     sector = uc.sector_normalized or uc.sector or "General"
     if payload.session_id:
         sess_result = await db.execute(select(Session).where(Session.id == payload.session_id))

@@ -277,7 +277,8 @@
       "badge": "Coverage",
       "title": "13 Industry Sectors",
       "subtitle": "Click any sector to start your analysis",
-      "useCasesCount": "{{count}} use cases"
+      "useCasesCount": "{{count}} use cases",
+      "useCasesLabel": "use cases"
     },
     "cta": {
       "title": "Ready to discover your AI opportunities?",

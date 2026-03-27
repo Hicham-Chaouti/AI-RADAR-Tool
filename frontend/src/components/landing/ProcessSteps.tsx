@@ -51,12 +51,12 @@ export default function ProcessSteps() {
 
         <motion.div
           variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, position: 'relative', alignItems: 'start' }}
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, position: 'relative', alignItems: 'stretch' }}
         >
           {steps.map((s, i) => {
             const Icon = s.icon
             return (
-              <motion.div key={s.key} variants={item} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+              <motion.div key={s.key} variants={item} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', height: '100%' }}>
                 {/* Connecting dashed line */}
                 {i < steps.length - 1 && (
                   <div style={{
@@ -78,7 +78,7 @@ export default function ProcessSteps() {
                 {/* Card */}
                 <div className="card" style={{
                   padding: 32, textAlign: 'center', width: '100%',
-                  background: 'var(--bg-white)',
+                  background: 'var(--bg-white)', flex: 1,
                 }}>
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
                     {t(`landing.process.steps.${s.key}.title`)}

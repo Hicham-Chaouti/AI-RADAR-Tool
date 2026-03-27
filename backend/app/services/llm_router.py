@@ -88,6 +88,56 @@ class LLMRouter:
         await self._cache.set(cache_key, {"text": text}, ttl=3600)
         return text
 
+    async def anonymize_use_case(
+        self,
+        title: str,
+        description: str,
+    ) -> dict:
+        """LLM-based anonymization of custom product/solution names. Cached per title hash."""
+        from app.prompts.anonymize_use_case import ANONYMIZE_PROMPT
+        import hashlib
+
+        content_hash = hashlib.sha256(f"{title}||{description}".encode()).hexdigest()[:16]
+        cache_key = f"anonymize:v1:{content_hash}"
+
+        cached = await self._cache.get(cache_key)
+        if isinstance(cached, dict) and cached.get("title"):
+            log.info("Anonymize cache hit", extra={"cache_hit": True, "task": "anonymize"})
+            return cached
+
+        if not self._client:
+            return {"title": title, "description": description}
+
+        prompt = ANONYMIZE_PROMPT.format(title=title, description=description)
+
+        start = time.time()
+        try:
+            response = await asyncio.to_thread(
+                self._client.chat.complete,
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+            )
+            latency = int((time.time() - start) * 1000)
+            raw = (response.choices[0].message.content or "").strip()
+            tokens = getattr(response.usage, "total_tokens", 0)
+
+            raw = re.sub(r"^```[a-z]*\n?", "", raw)
+            raw = re.sub(r"\n?```$", "", raw).strip()
+
+            data = json.loads(raw)
+
+            log.info(
+                "Anonymization complete",
+                extra={"model": LLM_MODEL, "task": "anonymize", "tokens": tokens, "latency_ms": latency},
+            )
+
+            await self._cache.set(cache_key, data, ttl=86400)
+            return data
+        except Exception as exc:
+            log.warning("Anonymization failed", extra={"error": str(exc)})
+            return {"title": title, "description": description}
+
     async def generate_roadmap(
         self,
         use_case: UseCase,
