@@ -35,13 +35,9 @@ export default function CTABanner() {
         <p style={{ color: 'var(--text-secondary)', fontSize: 16, marginBottom: 36, maxWidth: '50ch', margin: '0 auto 36px' }}>
           {t('landing.cta.subtitle')}
         </p>
-        <Link to="/onboarding" style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'var(--dxc-blue-vibrant)', color: 'white',
+        <Link to="/onboarding" className="btn btn-brand" style={{
           padding: '16px 40px', borderRadius: 14,
           fontWeight: 700, fontSize: 16, textDecoration: 'none',
-          boxShadow: 'var(--shadow-blue)',
-          transition: 'all 0.25s',
         }}>
           {t('onboarding.launchAnalysis')} <ArrowRight size={18} />
         </Link>

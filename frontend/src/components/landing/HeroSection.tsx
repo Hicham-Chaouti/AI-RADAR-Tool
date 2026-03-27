@@ -68,13 +68,9 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.45 }}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}
         >
-          <Link to="/onboarding" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'var(--dxc-blue-vibrant)', color: 'white',
+          <Link to="/onboarding" className="btn btn-brand" style={{
             padding: '14px 32px', borderRadius: 12,
             fontSize: 15, fontWeight: 600, textDecoration: 'none',
-            boxShadow: 'var(--shadow-blue)',
-            transition: 'all 0.25s',
           }}>
             {t('landing.hero.startCta')} <ArrowRight size={16} />
           </Link>

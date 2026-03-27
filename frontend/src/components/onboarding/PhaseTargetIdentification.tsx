@@ -5,6 +5,7 @@ import { detectSector, DetectSectorResult } from '../../api/detectSector'
 import SectionLabel from '../ui/SectionLabel'
 import { Building2, ChevronDown } from 'lucide-react'
 import { useTranslation } from '../../hooks/useTranslation'
+import { useLocalizedDynamicText } from '../../hooks/useLocalizedDynamicText'
 
 interface Props {
   sector: string
@@ -21,6 +22,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
   const [sectorLocked, setSectorLocked] = useState(false)
   const [intelFlash, setIntelFlash] = useState(false)
   const prevClientName = useRef(clientName)
+  const { text: translatedReasoning } = useLocalizedDynamicText(detected?.reasoning)
 
   // Debounced sector detection
   useEffect(() => {
@@ -125,7 +127,7 @@ export default function PhaseTargetIdentification({ sector, clientName, onSector
                     </svg>
                     {detected.confidence === 'high' ? t('onboarding.target.detectedHigh') :
                      detected.confidence === 'medium' ? t('onboarding.target.detectedMedium') : t('onboarding.target.detectedLow')}
-                    {' — '}{detected.reasoning}
+                    {' — '}{translatedReasoning || detected.reasoning}
                   </motion.span>
                 )}
 

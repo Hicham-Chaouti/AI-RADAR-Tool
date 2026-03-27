@@ -73,19 +73,12 @@ export default function Navbar() {
 
       {/* Right */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', border: '1px solid var(--border-light)',
-          borderRadius: 999, overflow: 'hidden', background: 'var(--bg-muted)',
-        }}>
+        <div className="lang-switch">
           <button
             type="button"
             onClick={() => setLanguage('en')}
             aria-label="Switch language to English"
-            style={{
-              border: 'none', padding: '6px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-              color: language === 'en' ? 'white' : 'var(--text-secondary)',
-              background: language === 'en' ? 'var(--dxc-blue)' : 'transparent',
-            }}
+            className={`lang-switch-btn ${language === 'en' ? 'is-active' : ''}`}
           >
             {t('language.english')}
           </button>
@@ -93,11 +86,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setLanguage('fr')}
             aria-label="Switch language to French"
-            style={{
-              border: 'none', padding: '6px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-              color: language === 'fr' ? 'white' : 'var(--text-secondary)',
-              background: language === 'fr' ? 'var(--dxc-blue)' : 'transparent',
-            }}
+            className={`lang-switch-btn ${language === 'fr' ? 'is-active' : ''}`}
           >
             {t('language.french')}
           </button>
@@ -105,13 +94,9 @@ export default function Navbar() {
         <span style={{ fontSize: 14, color: 'var(--text-secondary)', cursor: 'pointer' }}>
           {t('navbar.signIn')}
         </span>
-        <Link to="/onboarding" style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'var(--dxc-blue-vibrant)', color: 'white',
+        <Link to="/onboarding" className="btn btn-brand" style={{
           padding: '10px 24px', borderRadius: 10,
           fontSize: 14, fontWeight: 600, textDecoration: 'none',
-          boxShadow: 'var(--shadow-blue)',
-          transition: 'all 0.25s',
         }}>
           {t('navbar.startAnalysis')} <ArrowRight size={14} />
         </Link>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from '../i18n/config'
 
 const getBaseURL = () => {
     // In Docker, use the backend service name on port 8000
@@ -13,6 +14,16 @@ const client = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+})
+
+client.interceptors.request.use((config) => {
+    const language = i18n.language?.startsWith('fr') ? 'fr' : 'en'
+    config.headers['Accept-Language'] = language
+    config.params = {
+        ...(config.params || {}),
+        lang: language,
+    }
+    return config
 })
 
 export default client

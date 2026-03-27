@@ -34,6 +34,13 @@ export function useLocalizedDynamicText(sourceText: string | null | undefined) {
       return
     }
 
+    // Keep short/ambiguous UI text stable in English instead of asking the LLM to "translate" unknown text.
+    if (language === 'en' && detected === 'unknown') {
+      cache.set(cacheKey, safeInput)
+      setText(safeInput)
+      return
+    }
+
     setIsTranslating(true)
     translateDescription({
       text: safeInput,

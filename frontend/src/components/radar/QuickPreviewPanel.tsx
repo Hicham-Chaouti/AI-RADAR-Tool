@@ -5,6 +5,7 @@ import ScoreBadge from '../ui/ScoreBadge'
 import { ArrowRight, ExternalLink, Tag, X } from 'lucide-react'
 import { useTranslation } from '../../hooks/useTranslation'
 import { useLocalizedDynamicText } from '../../hooks/useLocalizedDynamicText'
+import { useLocalizedDynamicFields } from '../../hooks/useLocalizedDynamicFields'
 
 interface Props {
   item: UseCaseScored | null
@@ -14,6 +15,12 @@ interface Props {
 export default function QuickPreviewPanel({ item, onClose }: Props) {
   const { t } = useTranslation()
   const { text: translatedSummary } = useLocalizedDynamicText(item?.justification || item?.title || '')
+  const localized = useLocalizedDynamicFields({
+    title: item?.title,
+    justification: item?.justification,
+    archetype: item?.archetype,
+    sector: item?.sector_normalized,
+  })
 
   return (
     <AnimatePresence>
@@ -49,6 +56,9 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
           </div>
 
           {/* Description preview */}
+          <h4 style={{ fontSize: 15, color: 'var(--text-primary)', marginBottom: 8, fontWeight: 700 }}>
+            {localized.title}
+          </h4>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
             {translatedSummary}
           </p>
@@ -61,7 +71,7 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
               marginBottom: 16,
             }}>
               <p style={{ fontSize: 13, color: 'var(--text-body)', fontStyle: 'italic', lineHeight: 1.6 }}>
-                {item.justification.slice(0, 200)}{item.justification.length > 200 && '...'}
+                {localized.justification.slice(0, 200)}{localized.justification.length > 200 && '...'}
               </p>
             </div>
           )}
@@ -75,7 +85,7 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
                 padding: '3px 10px', borderRadius: 'var(--radius-full)',
                 fontSize: 11, color: 'var(--text-secondary)',
               }}>
-                <Tag size={10} /> {item.archetype}
+                <Tag size={10} /> {localized.archetype}
               </span>
             )}
             {item.sector_normalized && (
@@ -84,7 +94,7 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
                 padding: '3px 10px', borderRadius: 'var(--radius-full)',
                 fontSize: 11, color: 'var(--text-secondary)',
               }}>
-                {item.sector_normalized}
+                {localized.sector}
               </span>
             )}
           </div>
@@ -92,12 +102,11 @@ export default function QuickPreviewPanel({ item, onClose }: Props) {
           {/* Actions */}
           <Link
             to={`/usecase/${item.use_case_id || item.id}`}
+            className="btn btn-brand"
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               width: '100%', padding: '10px 16px', borderRadius: 10,
-              background: 'var(--dxc-blue-vibrant)', color: 'white',
               fontSize: 13, fontWeight: 600, textDecoration: 'none',
-              boxShadow: 'var(--shadow-blue)',
             }}
           >
             {t('actions.viewFullDetails')} <ArrowRight size={14} />
