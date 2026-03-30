@@ -67,10 +67,15 @@ def build_query_text(
     capabilities: list[str] | None = None,
     objectives: list[str] | None = None,
 ) -> str:
-    """Build the query text for semantic search from session context."""
-    parts = [f"AI use cases for {sector} sector"]
-    if capabilities:
-        parts.append(f"capabilities: {', '.join(capabilities)}")
+    """Build the query text for semantic search from session context.
+
+    Objectives are placed first — they carry the most specific intent signal
+    and should dominate the embedding rather than the generic sector prefix.
+    """
+    parts = []
     if objectives:
-        parts.append(f"objectives: {', '.join(objectives)}")
+        parts.append(", ".join(objectives))
+    parts.append(f"{sector} AI solutions")
+    if capabilities:
+        parts.append(f"using {', '.join(capabilities)}")
     return " ".join(parts)

@@ -16,6 +16,7 @@ export interface RiskMitigation {
 export interface Roadmap {
   use_case_title: string
   objective: string
+  hypotheses_de_base?: string[]
   business_value: string[]
   budget_total?: string
   equipe_recommandee?: string

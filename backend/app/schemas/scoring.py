@@ -4,12 +4,13 @@ from pydantic import BaseModel, Field
 
 
 class ScoreBreakdown(BaseModel):
-    """The 4 main scoring dimensions."""
+    """The 4 main scoring dimensions plus the business-rules adjustment."""
 
     trend_strength: int = Field(ge=0, le=10)
     client_relevance: int = Field(ge=0, le=10)
     capability_match: int = Field(ge=0, le=10)
     market_momentum: int = Field(ge=0, le=10)
+    rule_adjustment: float = Field(default=0.0)  # sector + archetype bonuses
 
 
 class RadarAxes(BaseModel):

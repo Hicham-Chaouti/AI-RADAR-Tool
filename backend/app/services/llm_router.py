@@ -146,7 +146,7 @@ class LLMRouter:
         """Generate a structured implementation roadmap. Cached per use_case + sector (24h)."""
         from app.prompts.roadmap import ROADMAP_PROMPT
 
-        cache_key = f"roadmap:v3:{use_case.id}:{sector}"
+        cache_key = f"roadmap:v5:{use_case.id}:{sector}"
         cached = await self._cache.get(cache_key)
         if isinstance(cached, dict) and cached.get("roadmap"):
             log.info(

@@ -1,13 +1,16 @@
-"""Scoring service — 4-criteria weighted formula."""
+"""Scoring service — 4-criteria weighted formula + business rules adjustment."""
 
 from __future__ import annotations
 
 from app.models.use_case import UseCase
 from app.models.session import Session
 from app.schemas.scoring import ScoreBreakdown, RadarAxes, ScoringResult
+from app.services.business_rules import BusinessRulesEngine
 from app.utils.logger import get_logger
 
 log = get_logger(__name__)
+
+_rules = BusinessRulesEngine()
 
 # ─── Weights ────────────────────────────────────────────────
 W_TREND = 0.25
@@ -64,18 +67,23 @@ class ScoringEngine:
             2,
         )
 
+        # ── Business rules adjustment (sector + archetype) ────
+        rule_adj = round(_rules.compute_adjustment(use_case, session), 2)
+        final_score = round(min(10.0, max(0.0, radar_score + rule_adj)), 2)
+
         return ScoringResult(
             rank=0,  # set by caller after sorting
             use_case_id=use_case.id,
             title=use_case.title,
             company_example=use_case.company_example,
             source_url=use_case.source_url,
-            radar_score=radar_score,
+            radar_score=final_score,
             score_breakdown=ScoreBreakdown(
                 trend_strength=int(ts),
                 client_relevance=int(round(cr)),
                 capability_match=cm,
                 market_momentum=int(mm),
+                rule_adjustment=rule_adj,
             ),
             radar_axes=RadarAxes(
                 roi_potential=use_case.roi_potential or 5,
@@ -87,9 +95,15 @@ class ScoringEngine:
         )
 
     def _compute_capability_match(self, use_case: UseCase, session: Session) -> int:
-        """Count keyword matches between user capabilities and use case text."""
+        """Count keyword matches between capabilities + strategic objectives and use case text.
+
+        Objectives are weighted higher (2 pts each) than capability keywords (1 pt each)
+        because they express the client's specific intent rather than generic tech stack.
+        """
         user_caps = session.capabilities or []
-        if not user_caps:
+        objectives = session.strategic_objectives or []
+
+        if not user_caps and not objectives:
             return 5  # neutral default
 
         # Build searchable text from use case
@@ -102,11 +116,19 @@ class ScoringEngine:
         ]
         text = " ".join(parts).lower()
 
-        matched = 0
+        # Capability keyword matching (1 pt per keyword hit)
+        cap_score = 0
         for cap in user_caps:
             keywords = CAPABILITY_KEYWORDS.get(cap, [])
             for kw in keywords:
                 if kw in text:
-                    matched += 1
+                    cap_score += 1
 
-        return min(10, matched * 2)
+        # Objective term matching (2 pts per objective with at least one term hit)
+        obj_score = 0
+        for obj in objectives:
+            meaningful_words = [w for w in obj.lower().split() if len(w) > 3]
+            if meaningful_words and any(w in text for w in meaningful_words):
+                obj_score += 2
+
+        return min(10, cap_score + obj_score)

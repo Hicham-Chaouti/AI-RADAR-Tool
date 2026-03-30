@@ -68,11 +68,13 @@ async def score_use_cases(
         objectives=session.strategic_objectives,
     )
 
-    # 4. RAG: query Qdrant → top 20 candidates
+    # 4. RAG: query Qdrant → top 30 candidates
+    # Larger pool improves recall for niche domains (e.g. predictive maintenance)
+    # without a sector filter so cross-sector use cases remain discoverable.
     rag_results = await rag.query(
         query_text=query_text,
-        sector_filter=None,  # search across all sectors for broader results
-        top_k=20,
+        sector_filter=None,
+        top_k=30,
     )
 
     if not rag_results:
