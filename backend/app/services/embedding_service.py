@@ -9,8 +9,8 @@ from app.utils.logger import get_logger
 
 log = get_logger(__name__)
 
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-VECTOR_DIM = 384
+EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+VECTOR_DIM = 1024
 
 # Module-level singleton — set by init_embedding_model()
 _model = None
