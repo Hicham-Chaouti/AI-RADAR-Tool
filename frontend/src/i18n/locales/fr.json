@@ -39,7 +39,7 @@
     "description": "Description",
     "aiSolution": "Solution IA",
     "benefits": "Benefices",
-    "dataPrerequisites": "Prerequis de donnees",
+    "dataPrerequisites": "Outils & Technologies",
     "generatedJustification": "Justification generee par IA",
     "poweredBy": "Propulse par Mistral Small - contextualise pour {{client}}",
     "criteria": {
