@@ -292,14 +292,14 @@ export default function RoadmapSection({ useCaseId, sessionId }: Props) {
                 </table>
               </div>
 
-              {(roadmap.expectations.facteurs_pessimiste?.length > 0 || roadmap.expectations.facteurs_optimiste?.length > 0) && (
+              {((roadmap.expectations.facteurs_pessimiste?.length ?? 0) > 0 || (roadmap.expectations.facteurs_optimiste?.length ?? 0) > 0) && (
                 <div style={{ padding: '14px 18px', background: 'var(--bg-soft)', borderTop: '1px solid var(--border-light)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  {roadmap.expectations.facteurs_pessimiste?.length > 0 && (
+                  {(roadmap.expectations.facteurs_pessimiste?.length ?? 0) > 0 && (
                     <div>
                       <p style={{ fontSize: 11, fontWeight: 700, color: '#dc2626', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                         😟 {t('roadmap.facteursPessimiste', undefined, 'Facteurs pessimistes')}
                       </p>
-                      {roadmap.expectations.facteurs_pessimiste.map((f, i) => (
+                      {roadmap.expectations.facteurs_pessimiste?.map((f, i) => (
                         <div key={i} style={{ display: 'flex', gap: 6, fontSize: 12, color: 'var(--text-dim)', marginBottom: 3 }}>
                           <ChevronRight size={11} style={{ color: '#dc2626', flexShrink: 0, marginTop: 2 }} />
                           {f}
@@ -307,12 +307,12 @@ export default function RoadmapSection({ useCaseId, sessionId }: Props) {
                       ))}
                     </div>
                   )}
-                  {roadmap.expectations.facteurs_optimiste?.length > 0 && (
+                  {(roadmap.expectations.facteurs_optimiste?.length ?? 0) > 0 && (
                     <div>
                       <p style={{ fontSize: 11, fontWeight: 700, color: '#059669', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                         🚀 {t('roadmap.facteursOptimiste', undefined, 'Facteurs optimistes')}
                       </p>
-                      {roadmap.expectations.facteurs_optimiste.map((f, i) => (
+                      {roadmap.expectations.facteurs_optimiste?.map((f, i) => (
                         <div key={i} style={{ display: 'flex', gap: 6, fontSize: 12, color: 'var(--text-dim)', marginBottom: 3 }}>
                           <ChevronRight size={11} style={{ color: '#059669', flexShrink: 0, marginTop: 2 }} />
                           {f}
