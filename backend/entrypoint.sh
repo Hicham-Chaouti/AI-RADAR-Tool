@@ -3,8 +3,8 @@ set -e
 
 # Run migrations
 echo "Running database migrations..."
-cd /app/alembic
-python -m alembic upgrade head || true
+cd /app
+python -m alembic -c alembic/alembic.ini upgrade head || true
 
 # Start the application
 echo "Starting Uvicorn..."

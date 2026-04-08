@@ -10,8 +10,8 @@ os.chdir('/app')
 # Run migrations
 print("Running database migrations...")
 result = subprocess.run([
-    sys.executable, '-m', 'alembic', 'upgrade', 'head'
-], cwd='/app/alembic')
+    sys.executable, '-m', 'alembic', '-c', 'alembic/alembic.ini', 'upgrade', 'head'
+], cwd='/app')
 
 if result.returncode != 0:
     print("Warning: Migrations may have already been applied or failed")
