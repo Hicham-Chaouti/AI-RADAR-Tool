@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     # ─── Application ────────────────────────────────────────
     SECRET_KEY: str = "change-me-in-production"
     ENVIRONMENT: str = "development"
-    CORS_ORIGINS: str = "http://localhost:5173"
+    CORS_ORIGINS: str = "*"
     LOG_LEVEL: str = "INFO"
 
     # ─── Scraping ───────────────────────────────────────────
