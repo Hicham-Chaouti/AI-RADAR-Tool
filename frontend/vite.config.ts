@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+    base: '/',
     plugins: [react()],
     resolve: {
         alias: {
@@ -13,7 +14,11 @@ export default defineConfig({
         minify: 'esbuild',
         rollupOptions: {
             output: {
-                manualChunks: undefined,
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        return 'vendor'
+                    }
+                },
             },
         },
     },
