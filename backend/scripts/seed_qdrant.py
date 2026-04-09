@@ -30,8 +30,8 @@ from app.config import settings  # noqa: E402
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 ENRICHED_FILE = DATA_DIR / "seed_use_cases_anonymized.json"
 
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-VECTOR_DIM = 384
+EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+VECTOR_DIM = 1024
 BATCH_SIZE = 32
 COLLECTION_NAME = settings.QDRANT_COLLECTION
 

@@ -17,12 +17,23 @@ export function useLocalizedDynamicFields<T extends FieldMap>(source: T): Record
     return init
   })
 
+  // Serialize source values to a stable string so useMemo only recomputes when
+  // content actually changes — not when the caller creates a new object reference
+  // on every render (e.g. inline { title: uc.title }).
+  // Without this: new object ref → new entries ref → useEffect fires → setLocalized
+  // → re-render → new object ref → infinite loop of POST /translate/batch requests.
+  const stableKey = JSON.stringify(
+    (Object.keys(source) as Array<keyof T>).sort().map((key) => [key, source[key]])
+  )
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const entries = useMemo(() => {
     return (Object.keys(source) as Array<keyof T>).map((key) => {
       const raw = sanitizeCommercialNames((source[key] || '').trim())
       return { key, raw }
     })
-  }, [source])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stableKey])
 
   useEffect(() => {
     let cancelled = false

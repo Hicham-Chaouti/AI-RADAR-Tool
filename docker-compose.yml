@@ -60,7 +60,7 @@ services:
       - ./backend:/app
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_started
       qdrant:
@@ -74,7 +74,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - NODE_ENV=production
     volumes:
       - ./frontend:/app
       - /app/node_modules

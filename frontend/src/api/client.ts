@@ -2,9 +2,11 @@ import axios from 'axios'
 import i18n from '../i18n/config'
 
 const getBaseURL = () => {
-    // In Docker, use the backend service name on port 8000
-    // In development or from browser, use localhost:8000
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+    // Use VITE_API_URL if explicitly set, otherwise derive from current hostname
+    // This makes the app work on any deployment (local, VM, cloud) without config changes
+    const backendUrl =
+        import.meta.env.VITE_API_URL ||
+        `${window.location.protocol}//${window.location.hostname}:8000`
     return `${backendUrl}/api/v1`
 }
 
