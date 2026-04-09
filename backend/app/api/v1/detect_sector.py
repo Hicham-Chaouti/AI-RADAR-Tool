@@ -78,8 +78,7 @@ Rules:
 - Respond with ONLY the JSON, nothing else"""
 
     try:
-        response = await asyncio.to_thread(
-            client.chat.complete,
+        response = await client.chat.complete_async(
             model="mistral-small-latest",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
@@ -113,4 +112,7 @@ Rules:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        err = str(e)
+        if "429" in err or "capacity exceeded" in err or "rate limit" in err.lower():
+            raise HTTPException(status_code=429, detail="AI service rate limit reached. Please try again shortly.")
+        raise HTTPException(status_code=500, detail=err)

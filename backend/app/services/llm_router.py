@@ -62,31 +62,33 @@ class LLMRouter:
         )
 
         start = time.time()
-        response = await asyncio.to_thread(
-            self._client.chat.complete,
-            model=LLM_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-        )
-        latency = int((time.time() - start) * 1000)
-        text = (response.choices[0].message.content or "").strip()
-        tokens = getattr(response.usage, "total_tokens", 0)
+        try:
+            response = await self._client.chat.complete_async(
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+            )
+            latency = int((time.time() - start) * 1000)
+            text = (response.choices[0].message.content or "").strip()
+            tokens = getattr(response.usage, "total_tokens", 0)
 
-        log.info(
-            "Justification generated",
-            extra={
-                "use_case_id": use_case.id,
-                "model": LLM_MODEL,
-                "task": "justification",
-                "tokens": tokens,
-                "cache_hit": False,
-                "latency_ms": latency,
-            },
-        )
+            log.info(
+                "Justification generated",
+                extra={
+                    "use_case_id": use_case.id,
+                    "model": LLM_MODEL,
+                    "task": "justification",
+                    "tokens": tokens,
+                    "cache_hit": False,
+                    "latency_ms": latency,
+                },
+            )
 
-        # Cache for 1h
-        await self._cache.set(cache_key, {"text": text}, ttl=3600)
-        return text
+            await self._cache.set(cache_key, {"text": text}, ttl=3600)
+            return text
+        except Exception as exc:
+            log.warning("Justification generation failed", extra={"use_case_id": use_case.id, "error": str(exc)})
+            return "Justification temporarily unavailable."
 
     async def anonymize_use_case(
         self,
@@ -112,8 +114,7 @@ class LLMRouter:
 
         start = time.time()
         try:
-            response = await asyncio.to_thread(
-                self._client.chat.complete,
+            response = await self._client.chat.complete_async(
                 model=LLM_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.1,
@@ -169,8 +170,7 @@ class LLMRouter:
 
         start = time.time()
         try:
-            response = await asyncio.to_thread(
-                self._client.chat.complete,
+            response = await self._client.chat.complete_async(
                 model=LLM_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3,
@@ -233,30 +233,33 @@ class LLMRouter:
         )
 
         start = time.time()
-        response = await asyncio.to_thread(
-            self._client.chat.complete,
-            model=LLM_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-        )
-        latency = int((time.time() - start) * 1000)
-        text = (response.choices[0].message.content or "").strip()
-        tokens = getattr(response.usage, "total_tokens", 0)
+        try:
+            response = await self._client.chat.complete_async(
+                model=LLM_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+            )
+            latency = int((time.time() - start) * 1000)
+            text = (response.choices[0].message.content or "").strip()
+            tokens = getattr(response.usage, "total_tokens", 0)
 
-        log.info(
-            "Report summary generated",
-            extra={
-                "session_id": str(session.id),
-                "model": LLM_MODEL,
-                "task": "report_summary",
-                "tokens": tokens,
-                "cache_hit": False,
-                "latency_ms": latency,
-            },
-        )
+            log.info(
+                "Report summary generated",
+                extra={
+                    "session_id": str(session.id),
+                    "model": LLM_MODEL,
+                    "task": "report_summary",
+                    "tokens": tokens,
+                    "cache_hit": False,
+                    "latency_ms": latency,
+                },
+            )
 
-        await self._cache.set(cache_key, {"text": text}, ttl=3600)
-        return text
+            await self._cache.set(cache_key, {"text": text}, ttl=3600)
+            return text
+        except Exception as exc:
+            log.warning("Report summary generation failed", extra={"session_id": str(session.id), "error": str(exc)})
+            return "Summary temporarily unavailable."
 
 
 def _empty_roadmap(title: str) -> dict:
