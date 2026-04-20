@@ -1,0 +1,414 @@
+/* ═══════════════════════════════════════════════════════
+   PDF Report Styles — DXC Brand Palette
+   WeasyPrint-compatible (no JS, no Google Fonts)
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+    --dxc-blue: #6198F3;
+    --dxc-blue-dark: #334970;
+    --dxc-orange: #FF9259;
+    --dxc-coral: #E98166;
+    --bg-light: #FFFFFF;
+    --bg-alt: #f8f9fa;
+    --text-dark: #1A1A2E;
+    --text-muted: #666666;
+    --border-light: #e0e0e0;
+}
+
+/* ─── Page setup ─── */
+@page {
+    size: A4;
+    margin: 20mm;
+
+    @bottom-center {
+        content: counter(page);
+        font-size: 9pt;
+        color: #999;
+    }
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text-dark);
+    background: var(--bg-light);
+    line-height: 1.5;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+}
+
+.page-break {
+    page-break-before: always;
+}
+
+/* ═══════════════ COVER PAGE ═══════════════ */
+.cover-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 250mm;
+    text-align: center;
+}
+
+.cover-header {
+    background: var(--dxc-blue-dark);
+    color: white;
+    padding: 30px 0;
+    margin: -20mm -20mm 0 -20mm;
+    padding: 40px 20mm;
+}
+
+.dxc-logo {
+    font-size: 42pt;
+    font-weight: bold;
+    letter-spacing: 8px;
+    color: white;
+}
+
+.dxc-tagline {
+    font-size: 14pt;
+    color: var(--dxc-blue);
+    letter-spacing: 4px;
+    margin-top: 5px;
+}
+
+.cover-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.cover-title {
+    font-size: 32pt;
+    color: var(--dxc-blue-dark);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.cover-divider {
+    width: 120px;
+    height: 4px;
+    background: var(--dxc-orange);
+    margin: 0 auto 40px auto;
+}
+
+.cover-details {
+    margin-top: 20px;
+}
+
+.cover-label {
+    font-size: 10pt;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+    margin-top: 20px;
+}
+
+.cover-value {
+    font-size: 16pt;
+    color: var(--dxc-blue-dark);
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.cover-footer {
+    text-align: center;
+    padding: 20px 0;
+    border-top: 2px solid var(--dxc-blue);
+    color: var(--text-muted);
+    font-size: 10pt;
+}
+
+.confidential {
+    font-size: 8pt;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ═══════════════ SECTION TITLES ═══════════════ */
+.section-title {
+    font-size: 18pt;
+    color: var(--dxc-blue-dark);
+    border-bottom: 3px solid var(--dxc-blue);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.subsection-title {
+    font-size: 11pt;
+    color: var(--dxc-blue-dark);
+    margin-bottom: 6px;
+    margin-top: 14px;
+    font-weight: 700;
+}
+
+/* ═══════════════ EXECUTIVE SUMMARY ═══════════════ */
+.summary-text {
+    font-size: 11pt;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    text-align: justify;
+}
+
+.kpi-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.kpi-card {
+    flex: 1;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-light);
+    border-top: 4px solid var(--dxc-blue);
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+}
+
+.kpi-value {
+    font-size: 28pt;
+    font-weight: 700;
+    color: var(--dxc-blue-dark);
+    margin-bottom: 6px;
+}
+
+.kpi-label {
+    font-size: 9pt;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ═══════════════ TOP 10 TABLE ═══════════════ */
+.top10-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin-top: 10px;
+}
+
+.top10-table thead tr {
+    background: var(--dxc-blue-dark);
+    color: white;
+}
+
+.top10-table th {
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.top10-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+}
+
+.col-rank { width: 8%; }
+.col-title { width: 38%; }
+.col-archetype { width: 22%; }
+.col-score { width: 14%; text-align: center; }
+.col-qw { width: 18%; text-align: center; }
+
+.cell-rank {
+    font-weight: 700;
+    color: var(--dxc-blue-dark);
+    text-align: center;
+}
+
+.cell-score { text-align: center; }
+.cell-qw { text-align: center; }
+
+.row-odd { background: white; }
+.row-even { background: var(--bg-alt); }
+
+.badge-score {
+    display: inline-block;
+    background: var(--dxc-orange);
+    color: white;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 9.5pt;
+}
+
+.badge-qw {
+    display: inline-block;
+    background: var(--dxc-blue);
+    color: white;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 8.5pt;
+}
+
+/* ═══════════════ USE CASE DETAIL SHEETS ═══════════════ */
+.uc-header {
+    background: var(--dxc-blue-dark);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.uc-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.uc-rank {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--dxc-orange);
+}
+
+.uc-title {
+    font-size: 13pt;
+    font-weight: 600;
+}
+
+.uc-score-badge {
+    background: var(--dxc-orange);
+    color: white;
+    font-size: 16pt;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+.uc-company {
+    font-size: 10pt;
+    color: var(--text-muted);
+    margin: 8px 0 0 0;
+    font-style: italic;
+}
+
+/* Scores grid */
+.scores-section {
+    background: var(--bg-alt);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 12px;
+}
+
+.scores-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.score-item {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+}
+
+.score-label {
+    display: block;
+    font-size: 8pt;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.score-val {
+    display: block;
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--dxc-blue-dark);
+}
+
+/* Detail sections */
+.detail-section {
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.detail-section p {
+    font-size: 10pt;
+    line-height: 1.6;
+    margin: 4px 0;
+}
+
+/* Two-column layout */
+.two-col {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+}
+
+.col-half {
+    flex: 1;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.col-half ul {
+    margin: 4px 0;
+    padding-left: 18px;
+    font-size: 9.5pt;
+}
+
+.col-half li {
+    margin-bottom: 3px;
+    line-height: 1.4;
+}
+
+.no-data {
+    color: #999;
+    font-style: italic;
+    font-size: 9.5pt;
+}
+
+/* Justification */
+.justification-text {
+    background: var(--bg-alt);
+    border-left: 4px solid var(--dxc-blue);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* Source link */
+.uc-source {
+    margin-top: 14px;
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-light);
+    padding-top: 8px;
+}
+
+.uc-source a {
+    color: var(--dxc-blue);
+    text-decoration: none;
+}
+
+/* ═══════════════ FOOTER ═══════════════ */
+.page-footer {
+    text-align: center;
+    font-size: 8pt;
+    color: #999;
+    margin-top: 30px;
+}

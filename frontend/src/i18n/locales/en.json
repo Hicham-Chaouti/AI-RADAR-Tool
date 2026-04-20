@@ -1,0 +1,319 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "viewSource": "View source",
+    "yesFastImplementation": "Yes - fast implementation"
+  },
+  "language": {
+    "label": "Language",
+    "english": "EN",
+    "french": "FR"
+  },
+  "navbar": {
+    "back": "Back",
+    "platform": "Platform",
+    "methodology": "Methodology",
+    "startAnalysis": "Start Analysis",
+    "signIn": "Sign In",
+    "brand": "AI Radar"
+  },
+  "search": {
+    "placeholder": "Search..."
+  },
+  "actions": {
+    "readMore": "Read More",
+    "viewFullDetails": "View Full Details",
+    "newAnalysis": "New Analysis",
+    "exportPdf": "Export PDF",
+    "exporting": "Exporting..."
+  },
+  "radar": {
+    "topTen": "Top 10",
+    "results": "results",
+    "quickWin": "Quick Win",
+    "rank": "Rank #{{rank}}",
+    "backToResults": "Back to Results",
+    "company": "Company",
+    "source": "Source",
+    "archetype": "Archetype",
+    "description": "Description",
+    "aiSolution": "AI Solution",
+    "benefits": "Benefits",
+    "toolsAndTechnologies": "Tools & Technologies",
+    "generatedJustification": "AI-Generated Justification",
+    "poweredBy": "Powered by Mistral Small - Contextualised for {{client}}",
+    "criteria": {
+      "trendStrength": "Trend Strength",
+      "clientRelevance": "Client Relevance",
+      "capabilityMatch": "Capability Match",
+      "marketMomentum": "Market Momentum"
+    },
+    "axes": {
+      "roi": "ROI",
+      "tech": "Tech",
+      "market": "Market",
+      "risk": "Risk",
+      "quickWin": "Quick Win"
+    },
+    "roadmap": {
+      "title": "Implementation Roadmap",
+      "subtitle": "AI-generated consulting-grade delivery plan",
+      "generate": "Generate Roadmap",
+      "generating": "Generating your consulting roadmap...",
+      "idleHint": "Generate a step-by-step delivery roadmap with effort estimates, required profiles, and deliverables for each phase.",
+      "businessValue": "Business Value",
+      "budgetTotal": "Total Budget",
+      "dailyRate": "at 8,500 MAD/day blended rate",
+      "totalCharge": "Total Effort",
+      "equipeRecommandee": "Recommended Team",
+      "phases": "Delivery Phases",
+      "profils": "Profiles",
+      "keyActions": "Key Actions",
+      "livrables": "Deliverables",
+      "timeline": "Estimated Timeline",
+      "risksAndMitigations": "Risks & Mitigations",
+      "risk": "Risk",
+      "mitigation": "Mitigation",
+      "hypothesesTitle": "Base Hypotheses",
+      "hypothesesTechniques": "Technical",
+      "hypothesesOrga": "Organisational",
+      "hypothesesBusiness": "Business",
+      "complexity": "Complexity",
+      "complexity_faible": "Low",
+      "complexity_moyenne": "Medium",
+      "complexity_elevee": "High",
+      "roiAttendu": "Expected ROI",
+      "cible": "Target",
+      "expectationsTitle": "Projections & Scenarios",
+      "dimension": "Dimension",
+      "pessimiste": "Pessimistic",
+      "realiste": "Realistic",
+      "optimiste": "Optimistic",
+      "facteursPessimiste": "Pessimistic factors",
+      "facteursOptimiste": "Optimistic factors",
+      "goNoGo": "GO / NO-GO",
+      "dependances": "Depends on",
+      "metriquesSucces": "Success Criteria",
+      "livraison": "Delivery",
+      "adoptionM3": "Adoption M+3",
+      "impactM6": "Impact M+6",
+      "signalAbandon": "Abort signal",
+      "error": "Failed to generate roadmap. Please try again.",
+      "retry": "Retry"
+    }
+  },
+  "onboarding": {
+    "launchAnalysis": "Launch Analysis",
+    "analyzingSector": "Analyzing use cases across {{sector}}...",
+    "progress": {
+      "configure": "Configure",
+      "clientIntel": "Client Intel",
+      "capabilities": "Capabilities",
+      "launch": "Launch"
+    },
+    "page": {
+      "title": "Mission Briefing",
+      "subtitle": "Configure your AI analysis parameters"
+    },
+    "loading": {
+      "creatingSession": "Creating session...",
+      "scoringUseCases": "Scoring {{sector}} use cases...",
+      "analysisFailed": "Analysis failed",
+      "modelLoading": "The AI model is currently loading. Please wait a minute and try again.",
+      "serviceUnavailable": "The analysis service is temporarily unavailable."
+    },
+    "target": {
+      "sectionLabel": "TARGET IDENTIFICATION",
+      "title": "Client Profile",
+      "subtitle": "Define your target client and industry sector.",
+      "clientNameLabel": "Client Name",
+      "clientNamePlaceholder": "e.g. Attijariwafa Bank",
+      "detectingSector": "Detecting industry sector...",
+      "detectedHigh": "Sector identified",
+      "detectedMedium": "Sector inferred from name",
+      "detectedLow": "Best guess",
+      "detectError": "Could not auto-detect sector. Please select manually.",
+      "industrySectorLabel": "Industry Sector",
+      "aiConfirmed": "AI Confirmed",
+      "aiSuggested": "AI Suggested",
+      "changeManually": "Change manually",
+      "selectIndustry": "Select an industry...",
+      "sectorDetectedByAi": "Sector detected by AI",
+      "sectorIntel": "Sector Intel",
+      "sectorIntelBody": "AI use cases available in the knowledge base for this sector. Analysis will surface the top 10 matching opportunities."
+    },
+    "clientIntel": {
+      "sectionLabel": "CLIENT INTELLIGENCE",
+      "title": "Relationship Context",
+      "subtitle": "Help us understand the client relationship for better scoring.",
+      "relationshipLevelLabel": "Relationship Level",
+      "businessProximityLabel": "Business Proximity",
+      "relationship": {
+        "new": {
+          "label": "New Client",
+          "desc": "First engagement - discovery mode"
+        },
+        "existing": {
+          "label": "Existing Client",
+          "desc": "Ongoing partnership - deep context"
+        }
+      },
+      "proximity": {
+        "low": {
+          "label": "Low",
+          "desc": "Limited interaction"
+        },
+        "medium": {
+          "label": "Medium",
+          "desc": "Regular business"
+        },
+        "high": {
+          "label": "High",
+          "desc": "Strategic partner"
+        }
+      }
+    },
+    "arsenal": {
+      "sectionLabel": "ARSENAL & STACK",
+      "title": "AI Capabilities",
+      "subtitle": "Select the capabilities relevant to the client.",
+      "selectedCount": "{{count}} capabilities selected",
+      "groups": {
+        "coreAi": "Core AI",
+        "specialized": "Specialized",
+        "infrastructure": "Infrastructure",
+        "development": "Development"
+      }
+    },
+    "objectives": {
+      "sectionLabel": "MISSION OBJECTIVES",
+      "title": "Strategic Objectives",
+      "subtitle": "What does the client want to achieve with AI?",
+      "additionalContextLabel": "Additional context (optional)",
+      "additionalContextPlaceholder": "Any specific requirements, constraints or context...",
+      "options": {
+        "reduceCosts": "Reduce operational costs",
+        "improveCx": "Improve customer experience",
+        "accelerateTransformation": "Accelerate digital transformation",
+        "enhanceCompliance": "Enhance compliance & governance",
+        "driveRevenue": "Drive revenue growth",
+        "optimizeSupplyChain": "Optimize supply chain",
+        "boostProductivity": "Boost employee productivity"
+      }
+    }
+  },
+  "landing": {
+    "hero": {
+      "rating": "4.8/5",
+      "trustedBy": "Trusted by 300+ consultants",
+      "titlePrefix": "AI Opportunity Radar for",
+      "titleAccent": "DXC Consultants",
+      "subtitle": "Surface the Top 10 AI opportunities for any client in under 60 seconds using our 1,068-use-case knowledge base.",
+      "startCta": "Start Analysis",
+      "methodologyCta": "Methodology",
+      "stats": {
+        "use_cases_analyzed": "use cases analyzed",
+        "industry_sectors": "industry sectors",
+        "knowledge_sources": "knowledge sources",
+        "analysis_time": "analysis time"
+      }
+    },
+    "sources": {
+      "title": "Knowledge Base sourced from",
+      "blueprints": "Blueprints",
+      "blueprintProvider": "Google Cloud",
+      "counts": {
+        "googleCloud": "933 use cases",
+        "ibm": "47 use cases",
+        "salesforce": "57 use cases",
+        "blueprints": "31 use cases",
+        "benchmark": "Benchmark Ref.",
+        "comingV2": "Coming V2"
+      },
+      "badges": {
+        "calibrationOnly": "Calibration Only",
+        "comingV2": "Coming V2"
+      }
+    },
+    "dashboard": {
+      "top5Title": "Top 5 AI Opportunities",
+      "items": {
+        "fraudDetection": "AI-Powered Fraud Detection",
+        "churnPrediction": "Customer Churn Prediction",
+        "docAutomation": "Document Processing Automation",
+        "predictiveMaintenance": "Predictive Maintenance Engine",
+        "supportChatbot": "AI Chatbot for Support"
+      }
+    },
+    "process": {
+      "badge": "Work Process",
+      "title": "From Conversation to Roadmap in 4 Steps",
+      "subtitle": "A proven methodology that ensures transparent, auditable results.",
+      "steps": {
+        "discovery": {
+          "title": "Discovery",
+          "desc": "Select industry, input client name, define relationship level and AI capabilities."
+        },
+        "analysis": {
+          "title": "Analysis",
+          "desc": "Qdrant searches 1,068 embedded use cases using cosine similarity."
+        },
+        "scoring": {
+          "title": "Scoring",
+          "desc": "4-criteria weighted score: Trend 25% + Relevance 30% + Capability 25% + Momentum 20%."
+        },
+        "delivery": {
+          "title": "Delivery",
+          "desc": "Interactive radar, top 10 ranked list, AI-generated justifications, PDF export."
+        }
+      }
+    },
+    "features": {
+      "badge": "Why AI Radar",
+      "title": "Your unfair advantage in AI opportunity identification",
+      "subtitle": "We combine cutting-edge AI with structured methodology to deliver results in under 60 seconds.",
+      "items": {
+        "realUseCases": {
+          "title": "1,068 Real Use Cases",
+          "desc": "Every use case traces to a real public source URL. No hallucinated data."
+        },
+        "interactiveRadar": {
+          "title": "Interactive Radar Chart",
+          "desc": "5-axis visualization: ROI, Complexity, Maturity, Risk, Quick Win potential."
+        },
+        "aiJustifications": {
+          "title": "AI-Generated Justifications",
+          "desc": "Mistral Small contextualizes each recommendation to your specific client."
+        },
+        "under60s": {
+          "title": "Under 60 Seconds",
+          "desc": "From client profile to ranked roadmap in one click. No manual research."
+        },
+        "pdfExport": {
+          "title": "PDF Export",
+          "desc": "Professional report ready to send to the client. Radar, scores, justifications included."
+        },
+        "transparentScoring": {
+          "title": "Transparent Scoring",
+          "desc": "4 documented criteria with explicit weights. No black box. Fully auditable."
+        }
+      }
+    },
+    "sectors": {
+      "badge": "Coverage",
+      "title": "13 Industry Sectors",
+      "subtitle": "Click any sector to start your analysis",
+      "useCasesCount": "{{count}} use cases",
+      "useCasesLabel": "use cases"
+    },
+    "cta": {
+      "title": "Ready to discover your AI opportunities?",
+      "subtitle": "Join DXC consultants using AI to win more deals.",
+      "footnote": "No account required - Results in < 60 seconds"
+    }
+  },
+  "footer": {
+    "byDxc": "by DXC Technology",
+    "copyright": "© {{year}} DXC Technology · Internal Tool"
+  }
+}

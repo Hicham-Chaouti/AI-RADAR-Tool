@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Radar Report — {{ client_name }}</title>
+    <link rel="stylesheet" href="pdf_report.css">
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1 — COVER ═══════════════ -->
+<div class="cover-page">
+    <div class="cover-header">
+        <img src="static/dxclogo.png"
+             style="height:60px; width:auto; margin-bottom:20px;"
+             alt="DXC Technology"/>
+    </div>
+    <div class="cover-body">
+        <h1 class="cover-title">AI Opportunity Radar</h1>
+        <div class="cover-divider"></div>
+        <div class="cover-details">
+            <p class="cover-label">Client</p>
+            <p class="cover-value">{{ client_name }}</p>
+            <p class="cover-label">Secteur</p>
+            <p class="cover-value">{{ sector }}</p>
+            <p class="cover-label">Date</p>
+            <p class="cover-value">{{ generated_date }}</p>
+        </div>
+    </div>
+    <div class="cover-footer">
+        <p>Prepared by DXC Technology</p>
+        <p class="confidential">Confidential — Internal Use Only</p>
+    </div>
+</div>
+
+<!-- ═══════════════ PAGE 2 — EXECUTIVE SUMMARY ═══════════════ -->
+<div class="page-break"></div>
+<div class="page">
+    <h2 class="section-title">Résumé Exécutif</h2>
+    <div class="summary-text">
+        {{ executive_summary|safe }}
+    </div>
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-value">{{ total_analyzed }}</div>
+            <div class="kpi-label">Use cases analysés</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">{{ "%.2f"|format(top_score) }}/10</div>
+            <div class="kpi-label">Score maximum</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">{{ quick_win_count }}</div>
+            <div class="kpi-label">Quick Wins identifiés</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ PAGE 3 — TOP 10 TABLE ═══════════════ -->
+<div class="page-break"></div>
+<div class="page">
+    <h2 class="section-title">Top 10 — Use Cases Prioritisés</h2>
+    <table class="top10-table">
+        <thead>
+            <tr>
+                <th class="col-rank">Rang</th>
+                <th class="col-title">Titre</th>
+                <th class="col-archetype">Archetype</th>
+                <th class="col-score">Score</th>
+                <th class="col-qw">Quick Win</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for uc in top_10 %}
+            <tr class="{{ 'row-even' if loop.index is even else 'row-odd' }}">
+                <td class="cell-rank">#{{ uc.rank }}</td>
+                <td class="cell-title">{{ uc.title }}</td>
+                <td class="cell-archetype">{{ uc.archetype or '—' }}</td>
+                <td class="cell-score"><span class="badge-score">{{ "%.2f"|format(uc.radar_score) }}</span></td>
+                <td class="cell-qw">
+                    {% if uc.quick_win %}
+                    <span class="badge-qw">Quick Win</span>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ═══════════════ PAGES 4-13 — USE CASE DETAIL SHEETS ═══════════════ -->
+{% for uc in top_10 %}
+<div class="page-break"></div>
+<div class="page">
+    <div class="uc-header">
+        <div class="uc-header-left">
+            <span class="uc-rank">#{{ uc.rank }}</span>
+            <span class="uc-title">{{ uc.title }}</span>
+        </div>
+        <div class="uc-header-right">
+            <span class="uc-score-badge">{{ "%.2f"|format(uc.radar_score) }}</span>
+        </div>
+    </div>
+
+    {% if uc.company_example %}
+    <p class="uc-company">Company : {{ uc.company_example }}</p>
+    {% endif %}
+
+    <!-- Scores breakdown -->
+    <div class="scores-section">
+        <h3 class="subsection-title">Scores</h3>
+        <div class="scores-grid">
+            <div class="score-item">
+                <span class="score-label">Trend Strength</span>
+                <span class="score-val">{{ uc.scores.trend_strength }}/10</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">Client Relevance</span>
+                <span class="score-val">{{ "%.1f"|format(uc.scores.client_relevance) }}/10</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">Capability Match</span>
+                <span class="score-val">{{ uc.scores.capability_match }}/10</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">Market Momentum</span>
+                <span class="score-val">{{ uc.scores.market_momentum }}/10</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if uc.description %}
+    <div class="detail-section">
+        <h3 class="subsection-title">Description</h3>
+        <p>{{ uc.description }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Business Challenge -->
+    {% if uc.business_challenge %}
+    <div class="detail-section">
+        <h3 class="subsection-title">Business Challenge</h3>
+        <p>{{ uc.business_challenge }}</p>
+    </div>
+    {% endif %}
+
+    <!-- AI Solution -->
+    {% if uc.ai_solution %}
+    <div class="detail-section">
+        <h3 class="subsection-title">AI Solution</h3>
+        <p>{{ uc.ai_solution }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Benefits + Tools and Technologies side by side -->
+    <div class="two-col">
+        <div class="col-half">
+            <h3 class="subsection-title">Benefits</h3>
+            {% if uc.benefits %}
+            <ul>
+                {% for b in uc.benefits %}
+                <li>{{ b }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="no-data">—</p>
+            {% endif %}
+        </div>
+        <div class="col-half">
+            <h3 class="subsection-title">Tools and Technologies</h3>
+            {% if uc.tools_and_technologies %}
+            <ul>
+                {% for d in uc.tools_and_technologies %}
+                <li>{{ d }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="no-data">—</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Justification -->
+    {% if uc.justification %}
+    <div class="detail-section">
+        <h3 class="subsection-title">Justification</h3>
+        <p class="justification-text">{{ uc.justification|safe }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Source -->
+    <div class="uc-source">
+        Source : <a href="{{ uc.source_url }}">{{ uc.source_name }}</a>
+    </div>
+</div>
+{% endfor %}
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<div class="page-footer">
+    <p>AI Opportunity Radar — DXC Technology | Confidential</p>
+</div>
+
+</body>
+</html>
